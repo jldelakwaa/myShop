@@ -1,3 +1,15 @@
+CREATE TABLE `shops` (
+	`id` serial AUTO_INCREMENT NOT NULL,
+	`shop_domain` varchar(255) NOT NULL,
+	`access_token` varchar(255),
+	`scope` varchar(500),
+	`installed_at` timestamp NOT NULL DEFAULT (now()),
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `shops_id` PRIMARY KEY(`id`),
+	CONSTRAINT `shops_shop_domain_unique` UNIQUE(`shop_domain`)
+);
+--> statement-breakpoint
 CREATE TABLE `sessions` (
 	`id` varchar(255) NOT NULL,
 	`shop_id` int NOT NULL,
@@ -90,7 +102,13 @@ CREATE TABLE `recommendation_items` (
 	CONSTRAINT `recommendation_items_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
-ALTER TABLE `activity_logs` ADD `actor_type` enum('merchant','system') DEFAULT 'system' NOT NULL;--> statement-breakpoint
-ALTER TABLE `activity_logs` ADD `metadata` json;--> statement-breakpoint
-ALTER TABLE `shops` ADD `scope` varchar(500);--> statement-breakpoint
-ALTER TABLE `shops` ADD `installed_at` timestamp DEFAULT (now()) NOT NULL;
+CREATE TABLE `activity_logs` (
+	`id` serial AUTO_INCREMENT NOT NULL,
+	`shop_id` int NOT NULL,
+	`actor_type` enum('merchant','system') NOT NULL DEFAULT 'system',
+	`event_type` varchar(100) NOT NULL,
+	`message` varchar(500) NOT NULL,
+	`metadata` json,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	CONSTRAINT `activity_logs_id` PRIMARY KEY(`id`)
+);

@@ -14,3 +14,8 @@ pnpm create vite web --template react-ts
 cd web
 pnpm install
 pnpm add @shopify/app-bridge @shopify/app-bridge-react @shopify/polaris
+
+# Database
+CREATE DATABASE signal_shelf;
+pnpm db:generate
+pnpm db:migrate

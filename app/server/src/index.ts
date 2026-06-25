@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import { db } from "./db/index.js";
 import { shops } from "./db/schema.js";
+import { activityRouter } from "./routes/activity.js";
+import { dashboardRouter } from "./routes/dashboard.js";
+import { devRouter } from "./routes/dev.js";
 
 const app = express();
 
@@ -10,6 +13,10 @@ const port = Number(process.env.PORT ?? 3000);
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/api/activity", activityRouter);
+app.use("/api/dashboard", dashboardRouter);
+app.use("/api/dev", devRouter);
 
 // Health check endpoint
 app.get("/health", (_req, res) => {
@@ -22,7 +29,7 @@ app.get("/health", (_req, res) => {
 // Database health check endpoint
 app.get("/db-health", async (_req, res, next) => {
   try {
-    const result = await db.select().from(shops).limit(1);
+    await db.select().from(shops).limit(1);
 
     res.json({
       ok: true,
