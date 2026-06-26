@@ -8,6 +8,7 @@ import { dashboardRouter } from "./routes/dashboard.js";
 import { devRouter } from "./routes/dev.js";
 import { recommendationsRouter } from "./routes/recommendations.js";
 import { rulesRouter } from "./routes/rules.js";
+import { authRouter } from "./routes/auth.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ const port = Number(process.env.PORT ?? 3000);
 app.use(cors());
 app.use(express.json());
 
+app.use("/auth", authRouter);
 app.use("/api/activity", activityRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/dev", devRouter);

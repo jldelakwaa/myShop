@@ -11,7 +11,7 @@ import type { Recommendation } from "../../types/dashboard";
 import { titleize } from "../../utils/format";
 import PriorityBadge from "../badge/PriorityBadge";
 import StatusBadge from "../badge/StatusBadge";
-import RecommendationActions from "./RecommendationAction";
+import RecommendationActions from "./RecommendationActions";
 
 type RecommendationListProps = {
   recommendations: Recommendation[];

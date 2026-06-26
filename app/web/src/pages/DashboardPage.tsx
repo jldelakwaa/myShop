@@ -8,6 +8,8 @@ import {
   Layout,
   Page,
   Text,
+  Banner,
+  Box,
 } from "@shopify/polaris";
 
 import { fetchDashboard, seedDemoData } from "../api/dashboard";
@@ -16,6 +18,8 @@ import { MetricCard } from "../components/MetricCard";
 import { RecommendationList } from "../components/recommendations/RecommendationList";
 import { StatePanel } from "../components/StatePanel";
 import type { LoadState } from "../types/dashboard";
+import { useShopParam } from "../hooks/useShopParam";
+
 
 function getFailedLoadState(error: unknown): LoadState {
   const message =
@@ -31,6 +35,7 @@ function getFailedLoadState(error: unknown): LoadState {
 export function DashboardPage() {
   const [loadState, setLoadState] = useState<LoadState>({ status: "loading" });
   const [isSeeding, setIsSeeding] = useState(false);
+  const connectedShop = useShopParam();
 
   const loadDashboard = useCallback(async () => {
     try {
@@ -101,6 +106,12 @@ export function DashboardPage() {
         <StatePanel isLoading title="Loading dashboard" />
       ) : null}
 
+      {connectedShop ? (
+        <Banner tone="success">
+          <p>Connected to {connectedShop}</p>
+        </Banner>
+      ) : null}
+
       {loadState.status === "empty" ? (
         <StatePanel
           actionLabel={isSeeding ? "Seeding..." : "Seed demo data"}
@@ -138,54 +149,56 @@ function DashboardContent({
   onRefresh: () => void;
 }) {
   return (
-    <BlockStack gap="400">
-      <InlineGrid columns={{ xs: 1, sm: 2, md: 5 }} gap="400">
-        <MetricCard label="Products tracked" value={data.summary.products} />
-        <MetricCard label="Active rules" value={data.summary.activeRules} />
-        <MetricCard label="Low-stock risks" value={data.summary.lowStockCount} />
-        <MetricCard label="Stale-stock risks" value={data.summary.staleStockCount} />
-        <MetricCard
-          label="Open recommendations"
-          value={data.summary.openRecommendations}
-        />
-      </InlineGrid>
+    <Box paddingBlockStart="400" paddingBlockEnd="400">
+      <BlockStack gap="400">
+        <InlineGrid columns={{ xs: 1, sm: 2, md: 5 }} gap="400">
+          <MetricCard label="Products tracked" value={data.summary.products} />
+          <MetricCard label="Active rules" value={data.summary.activeRules} />
+          <MetricCard label="Low-stock risks" value={data.summary.lowStockCount} />
+          <MetricCard label="Stale-stock risks" value={data.summary.staleStockCount} />
+          <MetricCard
+            label="Open recommendations"
+            value={data.summary.openRecommendations}
+          />
+        </InlineGrid>
 
-      <Layout>
-        <Layout.Section>
-          <Card>
-            <BlockStack gap="400">
-              <InlineStack align="space-between" blockAlign="start">
+        <Layout>
+          <Layout.Section>
+            <Card>
+              <BlockStack gap="400">
+                <InlineStack align="space-between" blockAlign="start">
+                  <BlockStack gap="100">
+                    <Text as="h2" variant="headingMd">
+                      Top signals
+                    </Text>
+                    <Text as="p" tone="subdued">
+                      Ranked by merchandising urgency.
+                    </Text>
+                  </BlockStack>
+                  <Button onClick={onRefresh}>Refresh</Button>
+                </InlineStack>
+                <RecommendationList recommendations={data.recommendations} />
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+
+          <Layout.Section variant="oneThird">
+            <Card>
+              <BlockStack gap="400">
                 <BlockStack gap="100">
                   <Text as="h2" variant="headingMd">
-                    Top signals
+                    Activity
                   </Text>
                   <Text as="p" tone="subdued">
-                    Ranked by merchandising urgency.
+                    Recent system and merchant events.
                   </Text>
                 </BlockStack>
-                <Button onClick={onRefresh}>Refresh</Button>
-              </InlineStack>
-              <RecommendationList recommendations={data.recommendations} />
-            </BlockStack>
-          </Card>
-        </Layout.Section>
-
-        <Layout.Section variant="oneThird">
-          <Card>
-            <BlockStack gap="400">
-              <BlockStack gap="100">
-                <Text as="h2" variant="headingMd">
-                  Activity
-                </Text>
-                <Text as="p" tone="subdued">
-                  Recent system and merchant events.
-                </Text>
+                <ActivityList activity={data.recentActivity} />
               </BlockStack>
-              <ActivityList activity={data.recentActivity} />
-            </BlockStack>
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </BlockStack>
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </BlockStack>
+    </Box>
   );
 }
