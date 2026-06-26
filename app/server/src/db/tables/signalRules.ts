@@ -12,6 +12,7 @@ export const signalRules = mysqlTable("signal_rules", {
   id: serial("id").primaryKey(),
   shopId: int("shop_id").notNull(),
   name: varchar("name", { length: 255 }).notNull(),
+  strategy: varchar("strategy", { length: 50 }).default("balanced").notNull(),
   description: text("description"),
   inventoryRiskWeight: int("inventory_risk_weight").default(25).notNull(),
   staleStockWeight: int("stale_stock_weight").default(20).notNull(),

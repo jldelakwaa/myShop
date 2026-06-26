@@ -14,6 +14,7 @@ pnpm create vite web --template react-ts
 cd web
 pnpm install
 pnpm add @shopify/app-bridge @shopify/app-bridge-react @shopify/polaris
+pnpm add react-router-dom
 
 # Database
 CREATE DATABASE signal_shelf;

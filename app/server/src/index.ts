@@ -6,6 +6,8 @@ import { shops } from "./db/schema.js";
 import { activityRouter } from "./routes/activity.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 import { devRouter } from "./routes/dev.js";
+import { recommendationsRouter } from "./routes/recommendations.js";
+import { rulesRouter } from "./routes/rules.js";
 
 const app = express();
 
@@ -17,6 +19,8 @@ app.use(express.json());
 app.use("/api/activity", activityRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/dev", devRouter);
+app.use("/api/recommendations", recommendationsRouter);
+app.use("/api/rules", rulesRouter);
 
 // Health check endpoint
 app.get("/health", (_req, res) => {
@@ -50,9 +54,16 @@ app.use(
   ) => {
     console.error(error);
 
-    res.status(500).json({
+    const statusCode =
+      error instanceof Error &&
+      "statusCode" in error &&
+      typeof error.statusCode === "number"
+        ? error.statusCode
+        : 500;
+
+    res.status(statusCode).json({
       ok: false,
-      error: "Internal server error",
+      error: error instanceof Error ? error.message : "Internal server error",
     });
   },
 );

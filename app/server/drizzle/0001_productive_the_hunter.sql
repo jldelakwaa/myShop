@@ -1,0 +1,1 @@
+ALTER TABLE `signal_rules` ADD `strategy` varchar(50) DEFAULT 'balanced' NOT NULL;
