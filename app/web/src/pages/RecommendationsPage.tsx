@@ -5,6 +5,7 @@ import { fetchDashboard, seedDemoData } from "../api/dashboard";
 import { updateRecommendationStatus } from "../api/recommendations";
 import { RecommendationsReadyState } from "../components/recommendations/RecommendationsReadyState";
 import { StatePanel } from "../components/StatePanel";
+import { useShopParam } from "../hooks/useShopParam";
 import type { DashboardData, RecommendationStatus } from "../types/dashboard";
 
 type PageState =
@@ -29,10 +30,11 @@ export function RecommendationsPage() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const connectedShop = useShopParam();
 
   async function loadRecommendations() {
     try {
-      const data = await fetchDashboard();
+      const data = await fetchDashboard(connectedShop);
       setPageState({ status: "ready", data });
     } catch (error) {
       setPageState(getFailedPageState(error));
@@ -104,7 +106,7 @@ export function RecommendationsPage() {
 
     async function loadInitialRecommendations() {
       try {
-        const data = await fetchDashboard();
+        const data = await fetchDashboard(connectedShop);
 
         if (isActive) {
           setPageState({ status: "ready", data });
@@ -121,7 +123,7 @@ export function RecommendationsPage() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [connectedShop]);
 
   return (
     <Page

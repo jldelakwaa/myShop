@@ -1,0 +1,6 @@
+{
+  "watch": ["src", ".env"],
+  "ext": "ts,json,env",
+  "ignore": ["node_modules", "drizzle"],
+  "exec": "tsx src/index.ts"
+}

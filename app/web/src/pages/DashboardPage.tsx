@@ -13,6 +13,7 @@ import {
 } from "@shopify/polaris";
 
 import { fetchDashboard, seedDemoData } from "../api/dashboard";
+import { syncProducts } from "../api/products";
 import { ActivityList } from "../components/activity/ActivityList";
 import { MetricCard } from "../components/MetricCard";
 import { RecommendationList } from "../components/recommendations/RecommendationList";
@@ -35,16 +36,17 @@ function getFailedLoadState(error: unknown): LoadState {
 export function DashboardPage() {
   const [loadState, setLoadState] = useState<LoadState>({ status: "loading" });
   const [isSeeding, setIsSeeding] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const connectedShop = useShopParam();
 
   const loadDashboard = useCallback(async () => {
     try {
-      const data = await fetchDashboard();
+      const data = await fetchDashboard(connectedShop);
       setLoadState({ status: "ready", data });
     } catch (error) {
       setLoadState(getFailedLoadState(error));
     }
-  }, []);
+  }, [connectedShop]);
 
   const handleSeedDemoData = useCallback(async () => {
     setIsSeeding(true);
@@ -63,12 +65,33 @@ export function DashboardPage() {
     }
   }, [loadDashboard]);
 
+  const handleSyncProducts = useCallback(async () => {
+    if (!connectedShop) {
+      return;
+    }
+
+    setIsSyncing(true);
+
+    try {
+      await syncProducts(connectedShop);
+      await loadDashboard();
+    } catch (error) {
+      setLoadState({
+        status: "error",
+        message:
+          error instanceof Error ? error.message : "Product sync failed.",
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [connectedShop, loadDashboard]);
+
   useEffect(() => {
     let isActive = true;
 
     async function loadInitialDashboard() {
       try {
-        const data = await fetchDashboard();
+        const data = await fetchDashboard(connectedShop);
 
         if (isActive) {
           setLoadState({ status: "ready", data });
@@ -85,15 +108,25 @@ export function DashboardPage() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [connectedShop]);
 
   const primaryAction = useMemo(
     () => (
-      <Button loading={isSeeding} onClick={handleSeedDemoData} variant="primary">
-        Seed demo
+      <Button
+        loading={connectedShop ? isSyncing : isSeeding}
+        onClick={connectedShop ? handleSyncProducts : handleSeedDemoData}
+        variant="primary"
+      >
+        {connectedShop ? "Sync products" : "Seed demo"}
       </Button>
     ),
-    [handleSeedDemoData, isSeeding],
+    [
+      connectedShop,
+      handleSeedDemoData,
+      handleSyncProducts,
+      isSeeding,
+      isSyncing,
+    ],
   );
 
   return (

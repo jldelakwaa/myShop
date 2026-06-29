@@ -25,6 +25,7 @@ function App() {
 
 function AppFrame() {
   const location = useLocation();
+  const search = location.search;
 
   return (
     <Frame
@@ -34,19 +35,19 @@ function AppFrame() {
             items={[
               {
                 label: "Dashboard",
-                url: "/",
+                url: `/${search}`,
               },
               {
                 label: "Rules",
-                url: "/rules",
+                url: `/rules${search}`,
               },
               {
                 label: "Recommendations",
-                url: "/recommendations",
+                url: `/recommendations${search}`,
               },
               {
                 label: "Activity",
-                url: "/activity",
+                url: `/activity${search}`,
               },
             ]}
           />

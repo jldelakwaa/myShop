@@ -20,3 +20,8 @@ pnpm add react-router-dom
 CREATE DATABASE signal_shelf;
 pnpm db:generate
 pnpm db:migrate
+
+# Theme
+shopify theme init theme
+shopify theme dev --store 2v0ubf-z1.myshopify.com
+-> go to online store -> preference to get store password

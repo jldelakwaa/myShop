@@ -1,0 +1,12 @@
+{
+	"scripts": {
+		"server:dev": "pnpm --dir app/server dev",
+		"web:dev": "pnpm --dir app/web dev",
+		"web:build": "pnpm --dir app/web build",
+		"theme:dev": "shopify theme dev --path theme --store 2v0ubf-z1.myshopify.com",
+		"theme:check": "shopify theme check --path theme"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.14"
+	}
+}

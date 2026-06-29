@@ -5,6 +5,7 @@ import { fetchActivity } from "../api/activity";
 import { seedDemoData } from "../api/dashboard";
 import { ActivityList } from "../components/activity/ActivityList";
 import { StatePanel } from "../components/StatePanel";
+import { useShopParam } from "../hooks/useShopParam";
 import type { ActivityLog } from "../types/dashboard";
 
 type PageState =
@@ -30,10 +31,11 @@ function getFailedPageState(error: unknown): PageState {
 export function ActivityPage() {
   const [pageState, setPageState] = useState<PageState>({ status: "loading" });
   const [isSeeding, setIsSeeding] = useState(false);
+  const connectedShop = useShopParam();
 
   async function loadActivity() {
     try {
-      const data = await fetchActivity();
+      const data = await fetchActivity(connectedShop);
       setPageState({ status: "ready", activity: data.activity });
     } catch (error) {
       setPageState(getFailedPageState(error));
@@ -62,7 +64,7 @@ export function ActivityPage() {
 
     async function loadInitialActivity() {
       try {
-        const data = await fetchActivity();
+        const data = await fetchActivity(connectedShop);
 
         if (isActive) {
           setPageState({ status: "ready", activity: data.activity });
@@ -79,7 +81,7 @@ export function ActivityPage() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [connectedShop]);
 
   return (
     <Page

@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm";
-import { Router, type Router as ExpressRouter } from "express";
+import { Router, type Request, type Router as ExpressRouter } from "express";
 
 import { db } from "../db/index.js";
 import { shops, signalRules } from "../db/schema.js";
@@ -22,12 +22,13 @@ type RulePayload = {
   isActive?: unknown;
 };
 
-rulesRouter.get("/", async (_req, res, next) => {
+rulesRouter.get("/", async (req, res, next) => {
   try {
+    const shopDomain = getShopDomain(req);
     const [shop] = await db
       .select()
       .from(shops)
-      .where(eq(shops.shopDomain, demoShopDomain))
+      .where(eq(shops.shopDomain, shopDomain))
       .limit(1);
 
     if (!shop) {
@@ -49,29 +50,30 @@ rulesRouter.get("/", async (_req, res, next) => {
 rulesRouter.post("/", async (req, res, next) => {
   try {
     const payload = parseRulePayload(req.body);
+    const shopDomain = getShopDomain(req);
 
-    await db
-      .insert(shops)
-      .values({
-        shopDomain: demoShopDomain,
-        accessToken: "dev-token",
-        scope: "read_products,write_products,read_orders",
-      })
-      .onDuplicateKeyUpdate({
-        set: {
-          accessToken: "dev-token",
-          scope: "read_products,write_products,read_orders",
-        },
-      });
-
-    const [shop] = await db
+    let [shop] = await db
       .select()
       .from(shops)
-      .where(eq(shops.shopDomain, demoShopDomain))
+      .where(eq(shops.shopDomain, shopDomain))
       .limit(1);
 
     if (!shop) {
-      throw new Error("Demo shop could not be found.");
+      await db.insert(shops).values({
+        shopDomain,
+        accessToken: "dev-token",
+        scope: "read_products,write_products,read_orders",
+      });
+
+      [shop] = await db
+        .select()
+        .from(shops)
+        .where(eq(shops.shopDomain, shopDomain))
+        .limit(1);
+    }
+
+    if (!shop) {
+      throw new Error("Shop could not be found.");
     }
 
     await db.insert(signalRules).values({
@@ -205,4 +207,8 @@ class HttpError extends Error {
   ) {
     super(message);
   }
+}
+
+function getShopDomain(req: Request) {
+  return typeof req.query.shop === "string" ? req.query.shop : demoShopDomain;
 }

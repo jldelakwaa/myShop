@@ -1,18 +1,18 @@
-import { apiClient } from "./client";
+import { apiClient, withShopParam } from "./client";
 import type { RuleDraft, RuleRecord } from "../types/rules";
 
-export function fetchRules() {
+export function fetchRules(shop?: string | null) {
   return apiClient.get<{
     ok: true;
     rules: RuleRecord[];
-  }>("/api/rules");
+  }>(withShopParam("/api/rules", shop));
 }
 
-export function createRule(rule: RuleDraft) {
+export function createRule(rule: RuleDraft, shop?: string | null) {
   return apiClient.post<{
     ok: true;
     rule: RuleRecord;
-  }>("/api/rules", rule);
+  }>(withShopParam("/api/rules", shop), rule);
 }
 
 export function updateRule(id: number, rule: RuleDraft) {

@@ -9,6 +9,7 @@ import { devRouter } from "./routes/dev.js";
 import { recommendationsRouter } from "./routes/recommendations.js";
 import { rulesRouter } from "./routes/rules.js";
 import { authRouter } from "./routes/auth.js";
+import { productsRouter } from "./routes/products.js";
 
 const app = express();
 
@@ -21,8 +22,25 @@ app.use("/auth", authRouter);
 app.use("/api/activity", activityRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/dev", devRouter);
+app.use("/api/products", productsRouter);
 app.use("/api/recommendations", recommendationsRouter);
 app.use("/api/rules", rulesRouter);
+
+// Root endpoint
+app.get("/", (req, res) => {
+  const shop = req.query.shop;
+
+  if (typeof shop === "string") {
+    res.redirect(`/auth?shop=${encodeURIComponent(shop)}`);
+    return;
+  }
+
+  res.json({
+    ok: true,
+    service: "signal-shelf-api",
+    message: "Use /auth?shop=your-store.myshopify.com to install the app.",
+  });
+});
 
 // Health check endpoint
 app.get("/health", (_req, res) => {

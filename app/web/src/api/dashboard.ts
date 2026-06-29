@@ -1,8 +1,8 @@
-import { apiClient } from "./client";
+import { apiClient, withShopParam } from "./client";
 import type { DashboardData } from "../types/dashboard";
 
-export function fetchDashboard() {
-  return apiClient.get<DashboardData>("/api/dashboard");
+export function fetchDashboard(shop?: string | null) {
+  return apiClient.get<DashboardData>(withShopParam("/api/dashboard", shop));
 }
 
 export function seedDemoData() {

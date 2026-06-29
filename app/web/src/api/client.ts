@@ -47,3 +47,12 @@ export const apiClient = {
     });
   },
 };
+
+export function withShopParam(path: string, shop?: string | null) {
+  if (!shop) {
+    return path;
+  }
+
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}shop=${encodeURIComponent(shop)}`;
+}

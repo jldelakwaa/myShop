@@ -5,6 +5,7 @@ import { createRule, fetchRules, updateRule } from "../api/rules";
 import { RuleForm } from "../components/rules/RuleForm";
 import { RulePreview } from "../components/rules/RulePreview";
 import { StatePanel } from "../components/StatePanel";
+import { useShopParam } from "../hooks/useShopParam";
 import {
   defaultRule,
   toRuleDraft,
@@ -23,6 +24,7 @@ export function RulesPage() {
   const [savedRule, setSavedRule] = useState<RuleRecord | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const connectedShop = useShopParam();
 
   function updateRuleDraft<K extends keyof RuleDraft>(
     key: K,
@@ -40,7 +42,7 @@ export function RulesPage() {
     try {
       const result = savedRule
         ? await updateRule(savedRule.id, rule)
-        : await createRule(rule);
+        : await createRule(rule, connectedShop);
 
       setSavedRule(result.rule);
       setRule(toRuleDraft(result.rule));
@@ -57,7 +59,7 @@ export function RulesPage() {
 
     async function loadRules() {
       try {
-        const result = await fetchRules();
+        const result = await fetchRules(connectedShop);
         const firstRule = result.rules[0];
 
         if (!isActive) {
@@ -86,7 +88,7 @@ export function RulesPage() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [connectedShop]);
 
   return (
     <Page
