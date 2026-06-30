@@ -1,4 +1,4 @@
-# Contributing to Skeleton Theme
+# Contributing to Arcana Vault Theme
 
 ## How to contribute
 

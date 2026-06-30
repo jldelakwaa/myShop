@@ -7,7 +7,7 @@ import { logActivity } from "../services/activity.js";
 
 export const rulesRouter: ExpressRouter = Router();
 
-const demoShopDomain = "demo-lumen-loom.myshopify.com";
+const demoShopDomain = "demo-arcana-vault.myshopify.com";
 const allowedStrategies = ["balanced", "inventory", "clearance", "growth"];
 
 type RulePayload = {

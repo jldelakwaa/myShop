@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Button, Page } from "@shopify/polaris";
 
 import { fetchDashboard, seedDemoData } from "../api/dashboard";
-import { updateRecommendationStatus } from "../api/recommendations";
+import {
+  generateRecommendations,
+  updateRecommendationStatus,
+} from "../api/recommendations";
 import { RecommendationsReadyState } from "../components/recommendations/RecommendationsReadyState";
 import { StatePanel } from "../components/StatePanel";
 import { useShopParam } from "../hooks/useShopParam";
@@ -28,6 +31,7 @@ function getFailedPageState(error: unknown): PageState {
 export function RecommendationsPage() {
   const [pageState, setPageState] = useState<PageState>({ status: "loading" });
   const [isSeeding, setIsSeeding] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const connectedShop = useShopParam();
@@ -55,6 +59,24 @@ export function RecommendationsPage() {
       });
     } finally {
       setIsSeeding(false);
+    }
+  }
+
+  async function handleGenerateRecommendations() {
+    setIsGenerating(true);
+
+    try {
+      const result = await generateRecommendations(connectedShop);
+      await loadRecommendations();
+      setToastMessage(`Generated ${result.recommendations} recommendations.`);
+    } catch (error) {
+      setToastMessage(
+        error instanceof Error
+          ? error.message
+          : "Recommendation generation failed.",
+      );
+    } finally {
+      setIsGenerating(false);
     }
   }
 
@@ -130,8 +152,16 @@ export function RecommendationsPage() {
       title="Recommendations"
       subtitle="Review ranked product actions."
       primaryAction={
-        <Button loading={isSeeding} onClick={handleSeedDemoData} variant="primary">
-          Seed demo
+        <Button
+          loading={connectedShop ? isGenerating : isSeeding}
+          onClick={
+            connectedShop
+              ? handleGenerateRecommendations
+              : handleSeedDemoData
+          }
+          variant="primary"
+        >
+          {connectedShop ? "Generate signals" : "Seed demo"}
         </Button>
       }
     >

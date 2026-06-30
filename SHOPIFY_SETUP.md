@@ -11,7 +11,7 @@ The backend needs these environment variables:
 ```env
 SHOPIFY_API_KEY=
 SHOPIFY_API_SECRET=
-SHOPIFY_SCOPES=read_products,write_products,read_orders
+SHOPIFY_SCOPES=read_products,write_products,read_orders,write_publications
 SHOPIFY_APP_URL=
 ```
 
@@ -57,7 +57,7 @@ Example:
 ```env
 SHOPIFY_API_KEY=your_client_id
 SHOPIFY_API_SECRET=your_client_secret
-SHOPIFY_SCOPES=read_products,write_products,read_orders
+SHOPIFY_SCOPES=read_products,write_products,read_orders,write_publications
 ```
 
 Do not commit `.env`.

@@ -74,8 +74,31 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--font-primary--family);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: #fffcf5;
+  color: #140f1f;
+}
+
+a {
+  color: #140f1f;
+}
+
+button,
+input[type="submit"] {
+  min-height: 44px;
+  border: 1px solid #140f1f;
+  border-radius: 4px;
+  background: #140f1f;
+  color: #fff7df;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+input,
+select {
+  min-height: 44px;
+  border: 1px solid #cfc8ef;
+  background: #fff;
+  color: #140f1f;
 }
 
 /** Section layout utilities */

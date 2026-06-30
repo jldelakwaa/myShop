@@ -11,7 +11,9 @@ import {
 import { DashboardPage } from "./pages/DashboardPage";
 import { RulesPage } from "./pages/RulesPage";
 import { RecommendationsPage } from "./pages/RecommendationsPage";
+import { ProductsPage } from "./pages/ProductsPage";
 import { ActivityPage } from "./pages/ActivityPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
 function App() {
   return (
@@ -32,6 +34,7 @@ function AppFrame() {
       navigation={
         <Navigation location={location.pathname}>
           <Navigation.Section
+            fill
             items={[
               {
                 label: "Dashboard",
@@ -46,8 +49,21 @@ function AppFrame() {
                 url: `/recommendations${search}`,
               },
               {
+                label: "Products",
+                url: `/products${search}`,
+              },
+              {
                 label: "Activity",
                 url: `/activity${search}`,
+              },
+            ]}
+          />
+          <Navigation.Section
+            separator
+            items={[
+              {
+                label: "Settings",
+                url: `/settings${search}`,
               },
             ]}
           />
@@ -58,7 +74,9 @@ function AppFrame() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/rules" element={<RulesPage />} />
         <Route path="/recommendations" element={<RecommendationsPage />} />
+        <Route path="/products" element={<ProductsPage />} />
         <Route path="/activity" element={<ActivityPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </Frame>
   );

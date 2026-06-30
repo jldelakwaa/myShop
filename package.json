@@ -1,5 +1,6 @@
 {
 	"scripts": {
+		"dev": "concurrently -n web,server -c blue,green \"pnpm --dir app/web dev\" \"pnpm --dir app/server dev\"",
 		"server:dev": "pnpm --dir app/server dev",
 		"web:dev": "pnpm --dir app/web dev",
 		"web:build": "pnpm --dir app/web build",
@@ -7,6 +8,7 @@
 		"theme:check": "shopify theme check --path theme"
 	},
 	"devDependencies": {
+		"concurrently": "^9.2.1",
 		"nodemon": "^3.1.14"
 	}
 }

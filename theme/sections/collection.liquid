@@ -5,7 +5,15 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+<div class="arcana-page-heading">
+  <p class="arcana-eyebrow">Enter the vault</p>
+  <h1>{{ collection.title }}</h1>
+  {% if collection.description != blank %}
+    <p>{{ collection.description }}</p>
+  {% else %}
+    <p>Browse original starter decks, booster packs, sleeves, collector boxes, and archetype bundles for your next duel.</p>
+  {% endif %}
+</div>
 
 <div class="collection-products">
   {% paginate collection.products by 20 %}
@@ -20,12 +28,23 @@
             height: 400,
             crop: 'center'
           %}
+        {% else %}
+          <a
+            class="collection-product__image collection-product__image--fallback"
+            href="{{ product.url }}"
+            style="background-image: linear-gradient(180deg, rgba(18, 13, 27, 0.12), rgba(18, 13, 27, 0.82)), url({{ 'arcana-vault-hero.png' | asset_url }});"
+          >
+            <span>{{ product.title }}</span>
+          </a>
         {% endif %}
         <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+          <h2>{{ product.title | escape | link_to: product.url }}</h2>
+          <p>{{ product.vendor | default: 'Arcana Vault' }}</p>
+          <strong>{{ product.price | money }}</strong>
         </div>
       </div>
+    {% else %}
+      <p>No cards or collector gear are available in this collection yet.</p>
     {% endfor %}
 
     {{ paginate | default_pagination }}
@@ -33,9 +52,88 @@
 </div>
 
 {% stylesheet %}
+  .arcana-page-heading {
+    max-width: 760px;
+    padding: clamp(44px, 7vw, 86px) 0 28px;
+  }
+
+  .arcana-page-heading .arcana-eyebrow {
+    color: #6a58d8;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .arcana-page-heading h1 {
+    margin-top: 10px;
+    color: #140f1f;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    line-height: 0.96;
+  }
+
+  .arcana-page-heading p:last-child {
+    margin-top: 16px;
+    color: #5f5870;
+    line-height: 1.65;
+  }
+
   .collection-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    padding-bottom: 64px;
+  }
+
+  .collection-product {
+    overflow: hidden;
+    border: 1px solid #ded8f5;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .collection-product__image img {
+    aspect-ratio: 1;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .collection-product__image--fallback {
+    display: grid;
+    aspect-ratio: 1;
+    place-items: end start;
+    padding: 18px;
+    background-position: center;
+    background-size: cover;
+    color: #fff7df;
+    text-decoration: none;
+  }
+
+  .collection-product__image--fallback span {
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .collection-product__content {
+    padding: 18px;
+  }
+
+  .collection-product__content h2 {
+    font-size: 1.05rem;
+  }
+
+  .collection-product__content h2 a {
+    text-decoration: none;
+  }
+
+  .collection-product__content p {
+    margin-top: 8px;
+    color: #6c647c;
+  }
+
+  .collection-product__content strong {
+    display: block;
+    margin-top: 14px;
   }
 {% endstylesheet %}
 

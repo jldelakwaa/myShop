@@ -1,8 +1,8 @@
-<footer>
+<footer class="arcana-footer">
   <div class="footer__copyright">
     &copy;
     {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+    {{ shop.name | link_to: routes.root_url }}
   </div>
 
   <div class="footer__links">
@@ -21,19 +21,32 @@
 </footer>
 
 {% stylesheet %}
-  footer {
+  .arcana-footer {
     display: flex;
     justify-content: space-between;
+    gap: 24px;
     margin-top: 2rem;
+    padding: 36px 0;
+    border-top: 1px solid #ded8f5;
+    color: #6c647c;
   }
-  footer a {
+  .arcana-footer a {
     text-decoration: none;
-    color: var(--color-foreground);
+    color: #140f1f;
   }
-  footer .footer__links,
-  footer .footer__payment {
+  .arcana-footer .footer__links,
+  .arcana-footer .footer__payment {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
+  }
+  .footer__payment svg {
+    width: 38px;
+  }
+  @media (max-width: 760px) {
+    .arcana-footer {
+      flex-direction: column;
+    }
   }
 {% endstylesheet %}
 

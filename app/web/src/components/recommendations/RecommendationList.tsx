@@ -69,7 +69,10 @@ export function RecommendationList({
               </Badge>
             </BlockStack>
             <BlockStack gap="300" inlineAlign="end">
-              <Box minWidth="48px">
+              <Box minWidth="64px">
+                <Text as="p" alignment="end" tone="subdued" variant="bodySm">
+                  Score
+                </Text>
                 <Text as="p" alignment="end" variant="headingLg">
                   {recommendation.score}
                 </Text>

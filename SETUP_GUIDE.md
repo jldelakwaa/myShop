@@ -4,7 +4,7 @@ This guide is for setting up the project yourself from an empty workspace.
 
 Recommended concept:
 
-- Storefront theme: **Lumen Loom**, a fictional modular mood-lighting store.
+- Storefront theme: **Arcana Vault**, an original fantasy trading-card store.
 - Embedded app: **Signal Shelf**, a Shopify admin app that ranks products and recommends merchandising actions.
 
 The required stack is:
@@ -258,7 +258,7 @@ DATABASE_URL=mysql://signal_shelf_user:strong_password_here@localhost:3306/signa
 
 SHOPIFY_API_KEY=replace_me
 SHOPIFY_API_SECRET=replace_me
-SHOPIFY_SCOPES=read_products,write_products,read_orders
+SHOPIFY_SCOPES=read_products,write_products,read_orders,write_publications
 SHOPIFY_APP_URL=https://replace-with-your-tunnel-url
 SHOPIFY_REDIRECT_URI=https://replace-with-your-tunnel-url/auth/callback
 ```

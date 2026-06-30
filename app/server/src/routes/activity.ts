@@ -12,7 +12,7 @@ activityRouter.get("/", async (req, res, next) => {
     const shopDomain =
       typeof req.query.shop === "string"
         ? req.query.shop
-        : "demo-lumen-loom.myshopify.com";
+        : "demo-arcana-vault.myshopify.com";
 
     // Fetch the shop by domain
     const [shop] = await db

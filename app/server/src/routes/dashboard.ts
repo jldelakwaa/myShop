@@ -18,7 +18,7 @@ dashboardRouter.get("/", async (req, res, next) => {
     const shopDomain =
       typeof req.query.shop === "string"
         ? req.query.shop
-        : "demo-lumen-loom.myshopify.com";
+        : "demo-arcana-vault.myshopify.com";
 
     // Fetch the shop by domain
     const [shop] = await db
@@ -78,6 +78,7 @@ dashboardRouter.get("/", async (req, res, next) => {
     const openRecommendations = recommendations.filter(
       (recommendation) => recommendation.status === "open",
     ).length;
+    const syncStatus = getSyncStatus(recentActivity);
 
     res.json({
       ok: true,
@@ -92,6 +93,7 @@ dashboardRouter.get("/", async (req, res, next) => {
         staleStockCount,
         openRecommendations,
       },
+      syncStatus,
       recommendations,
       recentActivity,
     });
@@ -99,3 +101,21 @@ dashboardRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+function getSyncStatus(logs: Array<typeof activityLogs.$inferSelect>) {
+  return {
+    productsSyncedAt: getLatestEventTime(logs, "products_synced"),
+    salesSyncedAt: getLatestEventTime(logs, "sales_metrics_synced"),
+    recommendationsGeneratedAt: getLatestEventTime(
+      logs,
+      "recommendations_generated",
+    ),
+  };
+}
+
+function getLatestEventTime(
+  logs: Array<typeof activityLogs.$inferSelect>,
+  eventType: string,
+) {
+  return logs.find((log) => log.eventType === eventType)?.createdAt ?? null;
+}

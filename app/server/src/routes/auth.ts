@@ -1,5 +1,10 @@
 import { eq } from "drizzle-orm";
-import { Router, type Router as ExpressRouter } from "express";
+import {
+  Router,
+  type Request,
+  type Response,
+  type Router as ExpressRouter,
+} from "express";
 
 import { db } from "../db/index.js";
 import { sessions, shops } from "../db/schema.js";
@@ -20,6 +25,15 @@ authRouter.get("/", async (req, res, next) => {
       return;
     }
 
+    if (shouldRedirectTopLevel(req)) {
+      const authUrl = new URL("/auth", getEnv("SHOPIFY_APP_URL"));
+      authUrl.searchParams.set("shop", shop);
+      authUrl.searchParams.set("top_level", "1");
+
+      sendTopLevelRedirect(res, authUrl.toString());
+      return;
+    }
+
     await shopify.auth.begin({
       shop,
       callbackPath: "/auth/callback",
@@ -31,6 +45,44 @@ authRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+function shouldRedirectTopLevel(req: Request) {
+  if (req.query.top_level === "1") {
+    return false;
+  }
+
+  return (
+    req.query.embedded === "1" ||
+    req.get("sec-fetch-dest")?.toLowerCase() === "iframe"
+  );
+}
+
+function sendTopLevelRedirect(res: Response, url: string) {
+  const serializedUrl = JSON.stringify(url);
+  const escapedUrl = escapeHtml(url);
+
+  res.type("html").send(`<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0;url=${escapedUrl}">
+  </head>
+  <body>
+    <script>
+      window.top.location.href = ${serializedUrl};
+    </script>
+    <a href="${escapedUrl}" target="_top" rel="noreferrer">Continue installation</a>
+  </body>
+</html>`);
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
 
 authRouter.get("/callback", async (req, res, next) => {
   try {
@@ -87,8 +139,12 @@ authRouter.get("/callback", async (req, res, next) => {
         },
       });
 
-    const redirectUrl = new URL(getEnv("FRONTEND_APP_URL"));
+    const redirectUrl = new URL(getEnv("SHOPIFY_APP_URL"));
     redirectUrl.searchParams.set("shop", session.shop);
+
+    if (typeof req.query.host === "string") {
+      redirectUrl.searchParams.set("host", req.query.host);
+    }
 
     res.redirect(redirectUrl.toString());
   } catch (error) {

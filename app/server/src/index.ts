@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { eq } from "drizzle-orm";
 import { db } from "./db/index.js";
 import { shops } from "./db/schema.js";
 import { activityRouter } from "./routes/activity.js";
@@ -10,6 +11,7 @@ import { recommendationsRouter } from "./routes/recommendations.js";
 import { rulesRouter } from "./routes/rules.js";
 import { authRouter } from "./routes/auth.js";
 import { productsRouter } from "./routes/products.js";
+import { settingsRouter } from "./routes/settings.js";
 
 const app = express();
 
@@ -25,13 +27,37 @@ app.use("/api/dev", devRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/recommendations", recommendationsRouter);
 app.use("/api/rules", rulesRouter);
+app.use("/api/settings", settingsRouter);
 
 // Root endpoint
-app.get("/", (req, res) => {
+app.get("/", async (req, res, next) => {
   const shop = req.query.shop;
 
   if (typeof shop === "string") {
-    res.redirect(`/auth?shop=${encodeURIComponent(shop)}`);
+    try {
+      const [installedShop] = await db
+        .select({ id: shops.id })
+        .from(shops)
+        .where(eq(shops.shopDomain, shop))
+        .limit(1);
+
+      if (installedShop) {
+        next();
+        return;
+      }
+    } catch (error) {
+      next(error);
+      return;
+    }
+
+    const authUrl = new URL("/auth", "http://localhost");
+    authUrl.searchParams.set("shop", shop);
+
+    if (req.query.embedded === "1") {
+      authUrl.searchParams.set("embedded", "1");
+    }
+
+    res.redirect(`${authUrl.pathname}${authUrl.search}`);
     return;
   }
 
@@ -59,6 +85,36 @@ app.get("/db-health", async (_req, res, next) => {
       ok: true,
       database: "connected",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.use(async (req, res, next) => {
+  if (
+    req.method !== "GET" ||
+    req.path.startsWith("/api") ||
+    req.path.startsWith("/auth") ||
+    req.path === "/health" ||
+    req.path === "/db-health"
+  ) {
+    next();
+    return;
+  }
+
+  try {
+    const frontendUrl = new URL(req.originalUrl, process.env.FRONTEND_APP_URL);
+    const frontendResponse = await fetch(frontendUrl);
+
+    res.status(frontendResponse.status);
+    frontendResponse.headers.forEach((value, key) => {
+      if (key.toLowerCase() !== "content-encoding") {
+        res.setHeader(key, value);
+      }
+    });
+
+    const body = Buffer.from(await frontendResponse.arrayBuffer());
+    res.send(body);
   } catch (error) {
     next(error);
   }

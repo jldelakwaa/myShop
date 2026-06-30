@@ -13,13 +13,16 @@ import {
 } from "@shopify/polaris";
 
 import { fetchDashboard, seedDemoData } from "../api/dashboard";
-import { syncProducts } from "../api/products";
+import { syncProducts, syncSalesMetrics } from "../api/products";
+import { generateRecommendations } from "../api/recommendations";
 import { ActivityList } from "../components/activity/ActivityList";
 import { MetricCard } from "../components/MetricCard";
 import { RecommendationList } from "../components/recommendations/RecommendationList";
 import { StatePanel } from "../components/StatePanel";
 import type { LoadState } from "../types/dashboard";
 import { useShopParam } from "../hooks/useShopParam";
+import { formatRelativeTime } from "../utils/format";
+import { localThemePreviewUrl } from "../utils/themeLinks";
 
 
 function getFailedLoadState(error: unknown): LoadState {
@@ -37,6 +40,9 @@ export function DashboardPage() {
   const [loadState, setLoadState] = useState<LoadState>({ status: "loading" });
   const [isSeeding, setIsSeeding] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSyncingSales, setIsSyncingSales] = useState(false);
+  const [isRunningFullSync, setIsRunningFullSync] = useState(false);
+  const [syncNotice, setSyncNotice] = useState<string | null>(null);
   const connectedShop = useShopParam();
 
   const loadDashboard = useCallback(async () => {
@@ -86,6 +92,55 @@ export function DashboardPage() {
     }
   }, [connectedShop, loadDashboard]);
 
+  const handleSyncSalesMetrics = useCallback(async () => {
+    if (!connectedShop) {
+      return;
+    }
+
+    setIsSyncingSales(true);
+
+    try {
+      await syncSalesMetrics(connectedShop);
+      await loadDashboard();
+    } catch (error) {
+      setLoadState({
+        status: "error",
+        message:
+          error instanceof Error ? error.message : "Sales sync failed.",
+      });
+    } finally {
+      setIsSyncingSales(false);
+    }
+  }, [connectedShop, loadDashboard]);
+
+  const handleRunFullSync = useCallback(async () => {
+    if (!connectedShop) {
+      return;
+    }
+
+    setIsRunningFullSync(true);
+    setSyncNotice(null);
+
+    try {
+      const productsResult = await syncProducts(connectedShop);
+      const salesResult = await syncSalesMetrics(connectedShop);
+      const recommendationsResult = await generateRecommendations(connectedShop);
+
+      await loadDashboard();
+      setSyncNotice(
+        `Full sync complete: ${productsResult.products} products, ${salesResult.products} sales metrics, ${recommendationsResult.recommendations} recommendations.`,
+      );
+    } catch (error) {
+      setLoadState({
+        status: "error",
+        message:
+          error instanceof Error ? error.message : "Full sync failed.",
+      });
+    } finally {
+      setIsRunningFullSync(false);
+    }
+  }, [connectedShop, loadDashboard]);
+
   useEffect(() => {
     let isActive = true;
 
@@ -113,27 +168,53 @@ export function DashboardPage() {
   const primaryAction = useMemo(
     () => (
       <Button
-        loading={connectedShop ? isSyncing : isSeeding}
-        onClick={connectedShop ? handleSyncProducts : handleSeedDemoData}
+        loading={connectedShop ? isRunningFullSync : isSeeding}
+        onClick={connectedShop ? handleRunFullSync : handleSeedDemoData}
         variant="primary"
       >
-        {connectedShop ? "Sync products" : "Seed demo"}
+        {connectedShop ? "Run full sync" : "Seed demo"}
       </Button>
     ),
     [
       connectedShop,
       handleSeedDemoData,
-      handleSyncProducts,
+      handleRunFullSync,
       isSeeding,
-      isSyncing,
+      isRunningFullSync,
     ],
   );
+
+  function openThemePreview() {
+    window.open(localThemePreviewUrl, "_blank", "noopener,noreferrer");
+  }
 
   return (
     <Page
       title="Signal Shelf"
-      subtitle="Merchandising signals for Lumen Loom"
+      subtitle="Merchandising signals for Arcana Vault"
       primaryAction={primaryAction}
+      secondaryActions={
+        [
+          {
+            content: "Open theme",
+            onAction: openThemePreview,
+          },
+          ...(connectedShop
+            ? [
+              {
+                content: "Sync products",
+                loading: isSyncing,
+                onAction: handleSyncProducts,
+              },
+              {
+                content: "Sync sales",
+                loading: isSyncingSales,
+                onAction: handleSyncSalesMetrics,
+              },
+            ]
+            : []),
+        ]
+      }
     >
       {loadState.status === "loading" ? (
         <StatePanel isLoading title="Loading dashboard" />
@@ -142,6 +223,12 @@ export function DashboardPage() {
       {connectedShop ? (
         <Banner tone="success">
           <p>Connected to {connectedShop}</p>
+        </Banner>
+      ) : null}
+
+      {syncNotice ? (
+        <Banner tone="success" onDismiss={() => setSyncNotice(null)}>
+          <p>{syncNotice}</p>
         </Banner>
       ) : null}
 
@@ -195,6 +282,8 @@ function DashboardContent({
           />
         </InlineGrid>
 
+        <SyncStatusCard syncStatus={data.syncStatus} />
+
         <Layout>
           <Layout.Section>
             <Card>
@@ -233,5 +322,59 @@ function DashboardContent({
         </Layout>
       </BlockStack>
     </Box>
+  );
+}
+
+function SyncStatusCard({
+  syncStatus,
+}: {
+  syncStatus: Extract<LoadState, { status: "ready" }>["data"]["syncStatus"];
+}) {
+  return (
+    <Card>
+      <BlockStack gap="300">
+        <InlineStack align="space-between" blockAlign="center">
+          <BlockStack gap="100">
+            <Text as="h2" variant="headingMd">
+              Sync status
+            </Text>
+            <Text as="p" tone="subdued">
+              Latest data refreshes used by scoring.
+            </Text>
+          </BlockStack>
+        </InlineStack>
+
+        <InlineGrid columns={{ xs: 1, sm: 3 }} gap="400">
+          <SyncStatusItem
+            label="Products"
+            value={syncStatus.productsSyncedAt}
+          />
+          <SyncStatusItem label="Sales" value={syncStatus.salesSyncedAt} />
+          <SyncStatusItem
+            label="Signals"
+            value={syncStatus.recommendationsGeneratedAt}
+          />
+        </InlineGrid>
+      </BlockStack>
+    </Card>
+  );
+}
+
+function SyncStatusItem({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | null;
+}) {
+  return (
+    <BlockStack gap="050">
+      <Text as="p" tone="subdued" variant="bodySm">
+        {label}
+      </Text>
+      <Text as="p" variant="headingMd">
+        {formatRelativeTime(value)}
+      </Text>
+    </BlockStack>
   );
 }

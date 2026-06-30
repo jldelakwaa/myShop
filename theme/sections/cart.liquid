@@ -5,29 +5,188 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+<section class="arcana-cart">
+  <div class="arcana-page-heading">
+    <p class="arcana-eyebrow">Decklist check</p>
+    <h1>{{ 'cart.title' | t }}</h1>
+    <p>Review your booster packs, starter decks, sleeves, and collector gear before checkout.</p>
+  </div>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+  {% if cart.item_count > 0 %}
+    <form action="{{ routes.cart_url }}" method="post" class="cart-layout">
+      <div class="cart-items">
+        {% for item in cart.items %}
+          <div class="cart-item">
+            <div class="cart-item__image">
+              {% render 'image', image: item.image, url: item.url %}
+            </div>
+            <div class="cart-item__content">
+              <h2>{{ item.product.title }}</h2>
+              <p>{{ item.variant.title }}</p>
+              {{ 'cart.remove' | t | link_to: item.url_to_remove }}
+            </div>
+            <div class="cart-item__quantity">
+              <label for="CartQuantity-{{ forloop.index }}">Quantity</label>
+              <input id="CartQuantity-{{ forloop.index }}" type="number" name="updates[]" min="0" value="{{ item.quantity }}">
+            </div>
+            <strong>{{ item.final_line_price | money }}</strong>
+          </div>
+        {% endfor %}
+      </div>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+      <aside class="cart-summary">
+        <h2>Order summary</h2>
+        <div>
+          <span>Subtotal</span>
+          <strong>{{ cart.total_price | money }}</strong>
+        </div>
+        <p>Taxes and shipping are calculated at checkout.</p>
+        <input type="submit" value="{{ 'cart.update' | t }}">
+        <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
+      </aside>
+    </form>
+  {% else %}
+    <div class="cart-empty">
+      <h2>Your vault is empty.</h2>
+      <p>Add a starter deck or ask the deck oracle to choose your next build.</p>
+      <a class="cart-empty__button" href="{{ routes.all_products_collection_url }}">Shop booster vault</a>
+    </div>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .arcana-cart {
+    padding-bottom: 72px;
+  }
+
+  .arcana-cart .arcana-page-heading {
+    max-width: 760px;
+    padding: clamp(44px, 7vw, 86px) 0 28px;
+  }
+
+  .arcana-cart .arcana-eyebrow {
+    color: #6a58d8;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .arcana-cart .arcana-page-heading h1 {
+    margin-top: 10px;
+    color: #140f1f;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    line-height: 0.96;
+  }
+
+  .arcana-cart .arcana-page-heading p:last-child {
+    margin-top: 16px;
+    color: #5f5870;
+    line-height: 1.65;
+  }
+
+  .cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .cart-items,
+  .cart-summary,
+  .cart-empty {
+    border: 1px solid #ded8f5;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .cart-item {
+    display: grid;
+    grid-template-columns: 96px 1fr 140px auto;
+    gap: 18px;
+    align-items: center;
+    padding: 18px;
+    border-bottom: 1px solid #e6e0f7;
+  }
+
+  .cart-item:last-child {
+    border-bottom: 0;
+  }
+
+  .cart-item__image img {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  .cart-item h2 {
+    font-size: 1.05rem;
+  }
+
+  .cart-item p,
+  .cart-summary p {
+    color: #6c647c;
+  }
+
+  .cart-item__quantity {
+    display: grid;
+    gap: 6px;
+  }
+
+  .cart-item__quantity label {
+    color: #6c647c;
+    font-size: 0.82rem;
+  }
+
+  .cart-item__quantity input {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .cart-summary {
+    display: grid;
+    gap: 16px;
+    padding: 22px;
+  }
+
+  .cart-summary div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #e6e0f7;
+  }
+
+  .cart-empty {
+    padding: 32px;
+  }
+
+  .cart-empty p {
+    margin-top: 10px;
+    color: #6c647c;
+  }
+
+  .cart-empty__button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 20px;
+    padding: 0 16px;
+    border: 1px solid #140f1f;
+    border-radius: 4px;
+    background: #140f1f;
+    color: #fffaf0;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @media (max-width: 900px) {
+    .cart-layout,
+    .cart-item {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

@@ -2,6 +2,7 @@ import { eq, inArray } from "drizzle-orm";
 import { Router, type Router as ExpressRouter } from "express";
 
 import { db } from "../db/index.js";
+import { yugiohStructureDecks } from "../data/yugiohStructureDecks.js";
 import {
   productMetrics,
   products,
@@ -15,82 +16,17 @@ import { getPriority, scoreProduct } from "../services/scoring.js";
 
 export const devRouter: ExpressRouter = Router();
 
-const demoShopDomain = "demo-lumen-loom.myshopify.com";
+const demoShopDomain = "demo-arcana-vault.myshopify.com";
 
-const demoProducts = [
-  {
-    shopifyProductId: "gid://shopify/Product/1001",
-    title: "Halo Desk Kit",
-    handle: "halo-desk-kit",
-    vendor: "Lumen Loom",
-    productType: "Desk Lighting",
-    imageUrl: "https://placehold.co/640x640?text=Halo+Desk+Kit",
-    metrics: {
-      inventoryQuantity: 7,
-      reorderPoint: 12,
-      unitsSold30d: 26,
-      views30d: 890,
-      conversionRate: "0.0520",
-      grossMargin: "0.6400",
-      daysSinceLastSale: 1,
-      inventoryAgeDays: 18,
-    },
-  },
-  {
-    shopifyProductId: "gid://shopify/Product/1002",
-    title: "Studio Glow Rail",
-    handle: "studio-glow-rail",
-    vendor: "Lumen Loom",
-    productType: "Wall Lighting",
-    imageUrl: "https://placehold.co/640x640?text=Studio+Glow+Rail",
-    metrics: {
-      inventoryQuantity: 34,
-      reorderPoint: 10,
-      unitsSold30d: 9,
-      views30d: 420,
-      conversionRate: "0.0210",
-      grossMargin: "0.5100",
-      daysSinceLastSale: 5,
-      inventoryAgeDays: 74,
-    },
-  },
-  {
-    shopifyProductId: "gid://shopify/Product/1003",
-    title: "Corner Wash Starter Set",
-    handle: "corner-wash-starter-set",
-    vendor: "Lumen Loom",
-    productType: "Room Lighting",
-    imageUrl: "https://placehold.co/640x640?text=Corner+Wash",
-    metrics: {
-      inventoryQuantity: 4,
-      reorderPoint: 8,
-      unitsSold30d: 18,
-      views30d: 610,
-      conversionRate: "0.0410",
-      grossMargin: "0.5800",
-      daysSinceLastSale: 2,
-      inventoryAgeDays: 28,
-    },
-  },
-  {
-    shopifyProductId: "gid://shopify/Product/1004",
-    title: "Aurora Shelf Pods",
-    handle: "aurora-shelf-pods",
-    vendor: "Lumen Loom",
-    productType: "Accent Lighting",
-    imageUrl: "https://placehold.co/640x640?text=Aurora+Pods",
-    metrics: {
-      inventoryQuantity: 52,
-      reorderPoint: 10,
-      unitsSold30d: 3,
-      views30d: 190,
-      conversionRate: "0.0090",
-      grossMargin: "0.4700",
-      daysSinceLastSale: 19,
-      inventoryAgeDays: 96,
-    },
-  },
-];
+const demoProducts = yugiohStructureDecks.map((deck, index) => ({
+  shopifyProductId: `gid://shopify/Product/structure-deck-${String(index + 1).padStart(3, "0")}`,
+  title: deck.title,
+  handle: slugify(deck.title),
+  vendor: "Yu-Gi-Oh! TCG",
+  productType: getDeckProductType(deck.title),
+  imageUrl: getDeckPlaceholderUrl(deck.title, deck.year),
+  metrics: buildSeedMetrics(index, deck.year),
+}));
 
 devRouter.post("/seed", async (_req, res, next) => {
   try {
@@ -136,6 +72,19 @@ devRouter.post("/seed", async (_req, res, next) => {
       .where(eq(signalRecommendations.shopId, shop.id));
 
     await db.delete(signalRules).where(eq(signalRules.shopId, shop.id));
+
+    const existingProducts = await db
+      .select({ id: products.id })
+      .from(products)
+      .where(eq(products.shopId, shop.id));
+    const existingProductIds = existingProducts.map((product) => product.id);
+
+    if (existingProductIds.length > 0) {
+      await db
+        .delete(productMetrics)
+        .where(inArray(productMetrics.productId, existingProductIds));
+      await db.delete(products).where(eq(products.shopId, shop.id));
+    }
 
     for (const item of demoProducts) {
       await db
@@ -266,7 +215,8 @@ devRouter.post("/seed", async (_req, res, next) => {
     await logActivity({
       shopId: shop.id,
       eventType: "dev_seed_completed",
-      message: "Demo shop, products, metrics, rule, and recommendations seeded.",
+      message:
+        "Demo shop seeded with Yu-Gi-Oh! Structure Deck products, metrics, rule, and recommendations.",
       metadata: {
         products: seededProducts.length,
         recommendations: recommendations.length,
@@ -283,6 +233,54 @@ devRouter.post("/seed", async (_req, res, next) => {
     next(error);
   }
 });
+
+function buildSeedMetrics(index: number, year: number) {
+  const inventoryPattern = [4, 7, 12, 18, 26, 34, 52, 3, 9, 64, 21, 42];
+  const salesPattern = [31, 24, 18, 9, 5, 14, 28, 3, 22, 7, 16, 11];
+  const recentness = Math.max(0, 2026 - year);
+  const inventoryQuantity = inventoryPattern[index % inventoryPattern.length] ?? 0;
+  const baseSales = salesPattern[index % salesPattern.length] ?? 0;
+  const unitsSold30d = Math.max(1, baseSales - Math.min(recentness, 8));
+  const views30d = 260 + ((index * 73) % 820) + Math.max(0, 2026 - year) * 4;
+
+  return {
+    inventoryQuantity,
+    reorderPoint: 10 + (index % 5) * 2,
+    unitsSold30d,
+    views30d,
+    conversionRate: Math.min(unitsSold30d / views30d, 0.12).toFixed(4),
+    grossMargin: (0.44 + (index % 8) * 0.032).toFixed(4),
+    daysSinceLastSale: [1, 2, 3, 5, 8, 13, 21, 34][index % 8],
+    inventoryAgeDays: 12 + recentness * 31 + (index % 7) * 8,
+  };
+}
+
+function getDeckProductType(title: string) {
+  if (/blue-eyes|dragon|dragunity|albaz/i.test(title)) return "Dragon Structure Deck";
+  if (/cyber|machine|machina|geargia|powercode/i.test(title)) return "Machine Structure Deck";
+  if (/zombie|dark|underworld|shaddoll|fallen|marik/i.test(title)) return "Dark Structure Deck";
+  if (/spellcaster|charmer|yugi|pendulum|light|sanctuary/i.test(title)) return "Spellcaster Structure Deck";
+  if (/warrior|samurai|hero|kaiba/i.test(title)) return "Warrior Structure Deck";
+  if (/sea|fury|freezing/i.test(title)) return "Water Structure Deck";
+  if (/fire|blaze|soulburner/i.test(title)) return "Fire Structure Deck";
+  if (/dinosaur|beast|storm/i.test(title)) return "Creature Structure Deck";
+
+  return "Structure Deck";
+}
+
+function getDeckPlaceholderUrl(title: string, year: number) {
+  const label = encodeURIComponent(`${year} ${title}`).replaceAll("%20", "+");
+
+  return `https://placehold.co/640x640/140f1f/fff7df?text=${label}`;
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 devRouter.delete("/reset", async (_req, res, next) => {
   try {

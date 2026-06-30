@@ -33,6 +33,11 @@ export type DashboardData = {
     staleStockCount: number;
     openRecommendations: number;
   };
+  syncStatus: {
+    productsSyncedAt: string | null;
+    salesSyncedAt: string | null;
+    recommendationsGeneratedAt: string | null;
+  };
   recommendations: Recommendation[];
   recentActivity: ActivityLog[];
 };
