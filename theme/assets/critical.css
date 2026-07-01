@@ -74,8 +74,24 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--font-primary--family);
-  background-color: #fffcf5;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 214, 107, 0.16), transparent 28rem),
+    radial-gradient(circle at 86% 12%, rgba(141, 232, 255, 0.12), transparent 24rem),
+    linear-gradient(180deg, #fffcf5 0%, #f6f1e7 48%, #fffcf5 100%);
   color: #140f1f;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(20, 15, 31, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 15, 31, 0.03) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  pointer-events: none;
 }
 
 a {

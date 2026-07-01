@@ -1,6 +1,8 @@
-<header class="arcana-header">
+<header class="arcana-header full-width">
   <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
+    <a href="{{ routes.root_url }}">
+      {{ section.settings.brand_label | default: shop.name }}
+    </a>
   </h2>
 
   <div class="header__menu">
@@ -28,18 +30,26 @@
 
 {% stylesheet %}
   .arcana-header {
-    height: 5.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 4.75rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    border-bottom: 1px solid #ded8f5;
-    background: rgba(255, 252, 245, 0.94);
+    padding: 0 var(--page-margin);
+    border-bottom: 1px solid rgba(255, 214, 107, 0.22);
+    background:
+      linear-gradient(90deg, rgba(20, 15, 31, 0.94), rgba(20, 15, 31, 0.78)),
+      rgba(20, 15, 31, 0.9);
+    box-shadow: 0 18px 60px rgba(20, 15, 31, 0.16);
+    backdrop-filter: blur(18px);
   }
   .arcana-header a {
     position: relative;
     text-decoration: none;
-    color: #140f1f;
+    color: #fff7df;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,16 +59,28 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+  .header__title a {
+    min-height: 38px;
+    padding-left: 14px;
+    border-left: 3px solid #ffd66b;
+    font-weight: 900;
+  }
   .header__menu {
     flex: 1;
     justify-content: center;
   }
   .header__menu a {
-    color: #6c647c;
+    min-height: 38px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: rgba(255, 247, 223, 0.76);
     font-size: 0.94rem;
   }
   .header__menu a:hover {
-    color: #140f1f;
+    border-color: rgba(255, 214, 107, 0.36);
+    background: rgba(255, 247, 223, 0.08);
+    color: #fff7df;
   }
   .arcana-header a sup {
     position: absolute;
@@ -76,6 +98,7 @@
   }
   .arcana-header svg {
     width: 2rem;
+    color: #fff7df;
   }
   .arcana-header .header__menu,
   .arcana-header .header__icons {
@@ -84,6 +107,16 @@
   }
   .header__icons {
     align-items: center;
+  }
+  .header__icons a,
+  .header__icons shopify-account {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid rgba(255, 247, 223, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 247, 223, 0.08);
   }
   @media (max-width: 760px) {
     .arcana-header {
@@ -104,6 +137,12 @@
 {
   "name": "t:general.header",
   "settings": [
+    {
+      "type": "text",
+      "id": "brand_label",
+      "label": "Brand label",
+      "default": "Arcana Vault"
+    },
     {
       "type": "link_list",
       "id": "menu",

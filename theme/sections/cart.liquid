@@ -18,7 +18,17 @@
         {% for item in cart.items %}
           <div class="cart-item">
             <div class="cart-item__image">
-              {% render 'image', image: item.image, url: item.url %}
+              {% if item.image %}
+                {% render 'image', image: item.image, url: item.url %}
+              {% else %}
+                <a
+                  class="cart-item__fallback"
+                  href="{{ item.url }}"
+                  style="background-image: linear-gradient(180deg, rgba(18, 13, 27, 0.08), rgba(18, 13, 27, 0.82)), url({{ 'arcana-vault-hero.png' | asset_url }});"
+                >
+                  <span>{{ item.product.title | slice: 0, 1 }}</span>
+                </a>
+              {% endif %}
             </div>
             <div class="cart-item__content">
               <h2>{{ item.product.title }}</h2>
@@ -35,18 +45,23 @@
       </div>
 
       <aside class="cart-summary">
+        <p class="arcana-eyebrow">Vault manifest</p>
         <h2>Order summary</h2>
+        <div>
+          <span>Deck slots</span>
+          <strong>{{ cart.item_count }}</strong>
+        </div>
         <div>
           <span>Subtotal</span>
           <strong>{{ cart.total_price | money }}</strong>
         </div>
-        <p>Taxes and shipping are calculated at checkout.</p>
+        <p>Taxes, shipping, and protection spells are calculated at checkout.</p>
         <input type="submit" value="{{ 'cart.update' | t }}">
         <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
       </aside>
     </form>
   {% else %}
-    <div class="cart-empty">
+    <div class="cart-empty" style="--cart-empty-image: url({{ 'arcana-vault-hero.png' | asset_url }});">
       <h2>Your vault is empty.</h2>
       <p>Add a starter deck or ask the deck oracle to choose your next build.</p>
       <a class="cart-empty__button" href="{{ routes.all_products_collection_url }}">Shop booster vault</a>
@@ -56,6 +71,7 @@
 
 {% stylesheet %}
   .arcana-cart {
+    position: relative;
     padding-bottom: 72px;
   }
 
@@ -95,14 +111,15 @@
   .cart-items,
   .cart-summary,
   .cart-empty {
-    border: 1px solid #ded8f5;
+    border: 1px solid rgba(106, 88, 216, 0.18);
     border-radius: 8px;
     background: #fff;
+    box-shadow: 0 20px 64px rgba(28, 20, 41, 0.08);
   }
 
   .cart-item {
     display: grid;
-    grid-template-columns: 96px 1fr 140px auto;
+    grid-template-columns: 108px 1fr 140px auto;
     gap: 18px;
     align-items: center;
     padding: 18px;
@@ -113,10 +130,33 @@
     border-bottom: 0;
   }
 
-  .cart-item__image img {
+  .cart-item__image img,
+  .cart-item__fallback {
+    display: block;
+    width: 100%;
     aspect-ratio: 1;
     border-radius: 6px;
     object-fit: cover;
+  }
+
+  .cart-item__fallback {
+    display: grid;
+    place-items: center;
+    background-position: center;
+    background-size: cover;
+    color: #fff7df;
+    text-decoration: none;
+  }
+
+  .cart-item__fallback span {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid rgba(255, 214, 107, 0.64);
+    border-radius: 999px;
+    background: rgba(20, 15, 31, 0.74);
+    font-weight: 800;
   }
 
   .cart-item h2 {
@@ -126,6 +166,13 @@
   .cart-item p,
   .cart-summary p {
     color: #6c647c;
+  }
+
+  .cart-item__content a {
+    display: inline-flex;
+    margin-top: 8px;
+    color: #6a58d8;
+    font-weight: 700;
   }
 
   .cart-item__quantity {
@@ -147,6 +194,9 @@
     display: grid;
     gap: 16px;
     padding: 22px;
+    background:
+      linear-gradient(180deg, #fff, #fbfaf5),
+      #fff;
   }
 
   .cart-summary div {
@@ -157,13 +207,38 @@
     border-top: 1px solid #e6e0f7;
   }
 
+  .cart-summary input[type="submit"] {
+    min-height: 44px;
+    border-radius: 4px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .cart-summary input[type="submit"]:not([name="checkout"]) {
+    border: 1px solid #d8d1f0;
+    background: #fff;
+    color: #140f1f;
+  }
+
+  .cart-summary input[name="checkout"] {
+    border: 1px solid #140f1f;
+    background: #140f1f;
+    color: #fff7df;
+  }
+
   .cart-empty {
-    padding: 32px;
+    padding: clamp(28px, 5vw, 48px);
+    background:
+      linear-gradient(90deg, rgba(20, 15, 31, 0.94), rgba(20, 15, 31, 0.68)),
+      var(--cart-empty-image);
+    background-position: center;
+    background-size: cover;
+    color: #fff7df;
   }
 
   .cart-empty p {
     margin-top: 10px;
-    color: #6c647c;
+    color: rgba(255, 247, 223, 0.76);
   }
 
   .cart-empty__button {
@@ -172,10 +247,10 @@
     min-height: 44px;
     margin-top: 20px;
     padding: 0 16px;
-    border: 1px solid #140f1f;
+    border: 1px solid #ffd66b;
     border-radius: 4px;
-    background: #140f1f;
-    color: #fffaf0;
+    background: #ffd66b;
+    color: #140f1f;
     font-weight: 700;
     text-decoration: none;
   }

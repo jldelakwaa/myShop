@@ -5,68 +5,118 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
-<section class="arcana-product">
-  <div class="product-images">
-    {% if product.images.size > 0 %}
-      {% for image in product.images %}
-        {% render 'image', class: 'product-image', image: image %}
-      {% endfor %}
-    {% else %}
-      <div
-        class="product-image product-image--placeholder"
-        style="background-image: linear-gradient(180deg, rgba(18, 13, 27, 0.08), rgba(18, 13, 27, 0.82)), url({{ 'arcana-vault-hero.png' | asset_url }});"
-      >
-        <span>{{ product.title }}</span>
+<section
+  class="arcana-product full-width"
+  style="--product-bg-image: url({% if product.featured_image %}{{ product.featured_image | image_url: width: 1800 }}{% else %}{{ 'arcana-vault-hero.png' | asset_url }}{% endif %});"
+>
+  <div class="arcana-product__inner">
+    <div class="product-gallery">
+      <div class="product-gallery__heading">
+        <p class="arcana-eyebrow">Vault record</p>
+        <span>{{ product.type | default: 'Structure Deck' }}</span>
       </div>
-    {% endif %}
-  </div>
 
-  <div class="product-panel">
-    <p class="arcana-eyebrow">{{ product.vendor | default: 'Arcana Vault' }}</p>
-    <h1>{{ product.title }}</h1>
-    <p class="product-price">{{ product.price | money }}</p>
-    <div class="product-description">{{ product.description }}</div>
-
-    <div class="product-promises">
-      <span>Original card line</span>
-      <span>Archetype-ready build</span>
-      <span>Collector-safe packaging</span>
+      <div class="product-images">
+      {% if product.images.size > 0 %}
+        {% for image in product.images %}
+          {% render 'image', class: 'product-image', image: image %}
+        {% endfor %}
+      {% else %}
+        <div
+          class="product-image product-image--placeholder"
+          style="background-image: linear-gradient(180deg, rgba(18, 13, 27, 0.08), rgba(18, 13, 27, 0.82)), url({{ 'arcana-vault-hero.png' | asset_url }});"
+        >
+          <span>{{ product.title }}</span>
+        </div>
+      {% endif %}
+      </div>
     </div>
 
-    <div class="product-form">
-      {% form 'product', product %}
-        {% assign current_variant = product.selected_or_first_available_variant %}
+    <div class="product-panel">
+      <p class="arcana-eyebrow">{{ product.vendor | default: 'Arcana Vault' }}</p>
+      <h1>{{ product.title }}</h1>
+      <div class="product-panel__meta">
+        <p class="product-price">{{ product.price | money }}</p>
+        {% if product.available %}
+          <span>Ready to sleeve</span>
+        {% else %}
+          <span>Out of stock</span>
+        {% endif %}
+      </div>
+      <div class="product-description">{{ product.description }}</div>
 
-        <label for="ProductVariant-{{ section.id }}">Edition</label>
-        <select id="ProductVariant-{{ section.id }}" name="id">
-          {% for variant in product.variants %}
-            <option
-              value="{{ variant.id }}"
-              {% if variant == current_variant %}
-                selected="selected"
-              {% endif %}
-            >
-              {{ variant.title }} - {{ variant.price | money }}
-            </option>
-          {% endfor %}
-        </select>
+      <div class="product-promises">
+        <span><strong>Build type</strong> Archetype-ready deck lane</span>
+        <span><strong>Vault care</strong> Collector-safe packaging</span>
+        <span><strong>Play path</strong> Tuned for fast table setup</span>
+      </div>
 
-        <label for="ProductQuantity-{{ section.id }}">Quantity</label>
-        <input id="ProductQuantity-{{ section.id }}" type="number" name="quantity" min="1" value="1">
+      <div class="product-form">
+        {% form 'product', product %}
+          {% assign current_variant = product.selected_or_first_available_variant %}
 
-        <input type="submit" value="Add to cart">
-        {{ form | payment_button }}
-      {% endform %}
+          <div class="product-form__row">
+            <label for="ProductVariant-{{ section.id }}">Edition</label>
+            <select id="ProductVariant-{{ section.id }}" name="id">
+              {% for variant in product.variants %}
+                <option
+                  value="{{ variant.id }}"
+                  {% if variant == current_variant %}
+                    selected="selected"
+                  {% endif %}
+                >
+                  {{ variant.title }} - {{ variant.price | money }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="product-form__row">
+            <label for="ProductQuantity-{{ section.id }}">Quantity</label>
+            <input id="ProductQuantity-{{ section.id }}" type="number" name="quantity" min="1" value="1">
+          </div>
+
+          <input type="submit" value="Add to vault">
+          {{ form | payment_button }}
+        {% endform %}
+      </div>
     </div>
   </div>
 </section>
 
 {% stylesheet %}
   .arcana-product {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(56px, 8vw, 104px) var(--page-margin);
+    background:
+      linear-gradient(90deg, rgba(20, 15, 31, 0.94), rgba(20, 15, 31, 0.66) 56%, rgba(255, 214, 107, 0.16)),
+      linear-gradient(180deg, rgba(20, 15, 31, 0.5), rgba(20, 15, 31, 0.92)),
+      var(--product-bg-image);
+    background-position: center;
+    background-size: cover;
+  }
+
+  .arcana-product::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255, 247, 223, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 247, 223, 0.045) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: linear-gradient(90deg, #000, transparent 74%);
+    pointer-events: none;
+  }
+
+  .arcana-product__inner {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
     gap: clamp(24px, 5vw, 64px);
-    padding: clamp(40px, 7vw, 86px) 0;
+    width: min(var(--page-width), calc(100vw - var(--page-margin) * 2));
+    margin: 0 auto;
   }
 
   .arcana-product .arcana-eyebrow {
@@ -75,6 +125,36 @@
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+
+  .product-gallery {
+    display: grid;
+    gap: 18px;
+    align-self: start;
+    padding: clamp(18px, 3vw, 30px);
+    border: 1px solid rgba(255, 214, 107, 0.28);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(255, 214, 107, 0.18), transparent 34%),
+      rgba(10, 7, 17, 0.72);
+    backdrop-filter: blur(18px);
+    color: #fff7df;
+  }
+
+  .product-gallery__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .product-gallery__heading .arcana-eyebrow {
+    color: #ffd66b;
+  }
+
+  .product-gallery__heading span {
+    color: rgba(255, 247, 223, 0.72);
+    font-size: 0.9rem;
   }
 
   .product-images {
@@ -86,11 +166,12 @@
   .product-image img {
     overflow: hidden;
     border-radius: 8px;
-    background: #ede8ff;
+    background: #21172f;
   }
 
   .product-image img {
     width: 100%;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
   }
 
@@ -123,9 +204,13 @@
     top: 24px;
     align-self: start;
     padding: 28px;
-    border: 1px solid #ded8f5;
+    border: 1px solid rgba(106, 88, 216, 0.2);
     border-radius: 8px;
-    background: #fff;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(251, 250, 245, 0.94)),
+      #fff;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 24px 70px rgba(28, 20, 41, 0.12);
   }
 
   .product-panel h1 {
@@ -135,9 +220,25 @@
     line-height: 0.98;
   }
 
-  .product-price {
+  .product-panel__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
     margin-top: 18px;
+  }
+
+  .product-price {
     font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  .product-panel__meta span {
+    padding: 7px 10px;
+    border: 1px solid #d8d1f0;
+    border-radius: 999px;
+    color: #493d5f;
+    font-size: 0.84rem;
     font-weight: 700;
   }
 
@@ -155,15 +256,28 @@
   }
 
   .product-promises span {
-    padding: 10px 12px;
+    display: grid;
+    gap: 2px;
+    padding: 12px;
     border: 1px solid #ded8f5;
     border-radius: 4px;
     background: #fbfaf5;
   }
 
+  .product-promises strong {
+    color: #6a58d8;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+  }
+
   .product-form form {
     display: grid;
     gap: 12px;
+  }
+
+  .product-form__row {
+    display: grid;
+    gap: 6px;
   }
 
   .product-form label {
@@ -178,8 +292,18 @@
     padding: 0 12px;
   }
 
+  .product-form input[type="submit"] {
+    min-height: 48px;
+    border: 1px solid #140f1f;
+    border-radius: 4px;
+    background: #140f1f;
+    color: #fff7df;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
   @media (max-width: 900px) {
-    .arcana-product {
+    .arcana-product__inner {
       grid-template-columns: 1fr;
     }
 

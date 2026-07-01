@@ -5,27 +5,87 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<div class="arcana-page-heading">
-  <p class="arcana-eyebrow">Enter the vault</p>
-  <h1>{{ collection.title }}</h1>
-  {% if collection.description != blank %}
-    <p>{{ collection.description }}</p>
-  {% else %}
-    <p>Browse original starter decks, booster packs, sleeves, collector boxes, and archetype bundles for your next duel.</p>
-  {% endif %}
+<div
+  class="arcana-page-heading collection-hero full-width"
+  style="--collection-hero-image: url({{ 'arcana-vault-hero.png' | asset_url }});"
+>
+  <div class="collection-hero__inner">
+    <p class="arcana-eyebrow">Enter the vault</p>
+    <h1>{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <p>{{ collection.description }}</p>
+    {% else %}
+      <p>Browse original starter decks, booster packs, sleeves, collector boxes, and archetype bundles for your next duel.</p>
+    {% endif %}
+  </div>
 </div>
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
+{% paginate collection.products by 48 %}
+  <div class="collection-toolbar" data-collection-toolbar>
+    <div class="collection-search">
+      <label for="CollectionSearch-{{ section.id }}">Search the vault</label>
+      <input
+        id="CollectionSearch-{{ section.id }}"
+        type="search"
+        placeholder="Search Blue-Eyes, Cyber, Dark, Fire..."
+        data-collection-search
+      >
+    </div>
+    <div class="collection-filter" aria-label="Filter products">
+      <div>
+        <label for="CollectionPlaystyle-{{ section.id }}">Playstyle</label>
+        <select id="CollectionPlaystyle-{{ section.id }}" data-filter-playstyle>
+          <option value="all">All playstyles</option>
+          <option value="aggro">Aggro</option>
+          <option value="control">Control</option>
+          <option value="combo">Combo</option>
+        </select>
+      </div>
+      <div>
+        <label for="CollectionAttribute-{{ section.id }}">Attribute</label>
+        <select id="CollectionAttribute-{{ section.id }}" data-filter-attribute>
+          <option value="all">All attributes</option>
+          <option value="dark">DARK</option>
+          <option value="light">LIGHT</option>
+          <option value="earth">EARTH</option>
+          <option value="water">WATER</option>
+          <option value="fire">FIRE</option>
+          <option value="wind">WIND</option>
+          <option value="divine">DIVINE</option>
+        </select>
+      </div>
+      <div>
+        <label for="CollectionSummon-{{ section.id }}">Summon type</label>
+        <select id="CollectionSummon-{{ section.id }}" data-filter-summon>
+          <option value="all">All summons</option>
+          <option value="normal">Normal</option>
+          <option value="tribute">Tribute</option>
+          <option value="fusion">Fusion</option>
+          <option value="synchro">Synchro</option>
+          <option value="xyz">Xyz</option>
+          <option value="pendulum">Pendulum</option>
+          <option value="link">Link</option>
+          <option value="ritual">Ritual</option>
+        </select>
+      </div>
+    </div>
+    <p class="collection-count" data-collection-count>{{ collection.products_count }} vault entries</p>
+  </div>
+
+  <div class="collection-products" data-collection-grid>
     {% for product in collection.products %}
-      <div class="collection-product">
+      <div
+        class="collection-product"
+        data-product-card
+        data-search="{{ product.title | append: ' ' | append: product.vendor | append: ' ' | append: product.type | append: ' ' | append: product.tags | downcase | escape }}"
+      >
         {% if product.featured_image %}
           {% render 'image',
             class: 'collection-product__image',
             image: product.featured_image,
             url: product.url,
-            width: 400,
-            height: 400,
+            width: 600,
+            height: 780,
             crop: 'center'
           %}
         {% else %}
@@ -38,27 +98,172 @@
           </a>
         {% endif %}
         <div class="collection-product__content">
+          <span>{{ product.type | default: 'Structure Deck' }}</span>
           <h2>{{ product.title | escape | link_to: product.url }}</h2>
           <p>{{ product.vendor | default: 'Arcana Vault' }}</p>
-          <strong>{{ product.price | money }}</strong>
+          <div>
+            <strong>{{ product.price | money }}</strong>
+            <a href="{{ product.url }}">View build</a>
+          </div>
         </div>
       </div>
     {% else %}
-      <p>No cards or collector gear are available in this collection yet.</p>
+      <p class="collection-empty">No cards or collector gear are available in this collection yet.</p>
     {% endfor %}
+  </div>
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+  <p class="collection-empty collection-empty--filtered" data-filter-empty hidden>No matching vault entries.</p>
+
+  {% if paginate.pages > 1 %}
+    <nav class="collection-pagination" aria-label="Collection pagination">
+      {% if paginate.previous %}
+        <a class="collection-pagination__button" href="{{ paginate.previous.url }}">Previous</a>
+      {% else %}
+        <span class="collection-pagination__button is-disabled">Previous</span>
+      {% endif %}
+
+      <div class="collection-pagination__pages">
+        {% for part in paginate.parts %}
+          {% if part.is_link %}
+            <a href="{{ part.url }}">{{ part.title }}</a>
+          {% else %}
+            <span
+              {% if part.title == paginate.current_page %}
+                class="is-current"
+              {% endif %}
+            >
+              {{ part.title }}
+            </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if paginate.next %}
+        <a class="collection-pagination__button" href="{{ paginate.next.url }}">Next</a>
+      {% else %}
+        <span class="collection-pagination__button is-disabled">Next</span>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endpaginate %}
+
+<script>
+  (() => {
+    const toolbar = document.querySelector("[data-collection-toolbar]");
+    const grid = document.querySelector("[data-collection-grid]");
+    if (!toolbar || !grid) return;
+
+    const search = toolbar.querySelector("[data-collection-search]");
+    const playstyleFilter = toolbar.querySelector("[data-filter-playstyle]");
+    const attributeFilter = toolbar.querySelector("[data-filter-attribute]");
+    const summonFilter = toolbar.querySelector("[data-filter-summon]");
+    const cards = [...grid.querySelectorAll("[data-product-card]")];
+    const count = toolbar.querySelector("[data-collection-count]");
+    const empty = document.querySelector("[data-filter-empty]");
+
+    const attributeKeywords = {
+      dark: ["dark", "zombie", "underworld", "shaddoll", "fallen", "marik"],
+      light: ["light", "blue-eyes", "sanctuary", "wave"],
+      earth: ["earth", "dinosaur", "dinosmasher", "fortress", "geargia"],
+      water: ["water", "sea", "freezing", "fury from the deep"],
+      fire: ["fire", "blaze", "soulburner"],
+      wind: ["wind", "storm", "dragunity"],
+      divine: ["sacred", "beast"]
+    };
+
+    const summonKeywords = {
+      normal: ["normal", "starter", "structure deck"],
+      tribute: ["tribute", "monarch", "emperor", "kaiba"],
+      fusion: ["fusion", "shaddoll", "albaz", "fallen"],
+      synchro: ["synchro", "synchron", "5d", "dragunity"],
+      xyz: ["xyz"],
+      pendulum: ["pendulum"],
+      link: ["link", "cyberse", "powercode", "soulburner"],
+      ritual: ["ritual"]
+    };
+
+    const playstyleKeywords = {
+      aggro: ["dragon", "blue-eyes", "fire", "dinosaur", "warrior", "hero", "kaiba", "soulburner"],
+      control: ["dark", "water", "sea", "light", "sanctuary", "spellcaster", "charmer", "underworld"],
+      combo: ["machine", "cyber", "pendulum", "link", "synchro", "shaddoll", "albaz", "dragunity"]
+    };
+
+    function matchesKeywordGroup(value, haystack, groups) {
+      return value === "all" || groups[value]?.some((keyword) => haystack.includes(keyword));
+    }
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      const playstyle = playstyleFilter.value;
+      const attribute = attributeFilter.value;
+      const summon = summonFilter.value;
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const haystack = card.dataset.search || "";
+        const matchesText = !query || haystack.includes(query);
+        const matchesPlaystyle = matchesKeywordGroup(playstyle, haystack, playstyleKeywords);
+        const matchesAttribute = matchesKeywordGroup(attribute, haystack, attributeKeywords);
+        const matchesSummon = matchesKeywordGroup(summon, haystack, summonKeywords);
+        const isVisible = matchesText && matchesPlaystyle && matchesAttribute && matchesSummon;
+
+        card.hidden = !isVisible;
+        if (isVisible) visible += 1;
+      });
+
+      count.textContent = `${visible} vault ${visible === 1 ? "entry" : "entries"}`;
+      if (empty) empty.hidden = visible !== 0;
+    }
+
+    search.addEventListener("input", render);
+    playstyleFilter.addEventListener("change", render);
+    attributeFilter.addEventListener("change", render);
+    summonFilter.addEventListener("change", render);
+  })();
+</script>
 
 {% stylesheet %}
   .arcana-page-heading {
-    max-width: 760px;
-    padding: clamp(44px, 7vw, 86px) 0 28px;
+    max-width: none;
+  }
+
+  .collection-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(220px, 28vw, 340px);
+    margin-bottom: 28px;
+    padding: clamp(42px, 7vw, 84px) 0 clamp(36px, 6vw, 64px);
+    background:
+      linear-gradient(90deg, rgba(20, 15, 31, 0.94), rgba(20, 15, 31, 0.64) 56%, rgba(255, 214, 107, 0.18)),
+      linear-gradient(180deg, rgba(20, 15, 31, 0.36), rgba(20, 15, 31, 0.88)),
+      var(--collection-hero-image);
+    background-position: center;
+    background-size: cover;
+    color: #fff7df;
+  }
+
+  .collection-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 247, 223, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 247, 223, 0.05) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: linear-gradient(90deg, #000, transparent 76%);
+    pointer-events: none;
+  }
+
+  .collection-hero__inner {
+    position: relative;
+    z-index: 1;
+    width: min(var(--page-width), calc(100vw - var(--page-margin) * 2));
+    margin: 0 auto;
+    max-width: 840px;
   }
 
   .arcana-page-heading .arcana-eyebrow {
-    color: #6a58d8;
+    color: #ffd66b;
     font-size: 0.84rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -67,40 +272,118 @@
 
   .arcana-page-heading h1 {
     margin-top: 10px;
-    color: #140f1f;
-    font-size: clamp(2.4rem, 6vw, 5rem);
+    color: #fff7df;
+    font-size: clamp(2.2rem, 5vw, 4.2rem);
     line-height: 0.96;
   }
 
   .arcana-page-heading p:last-child {
     margin-top: 16px;
-    color: #5f5870;
+    color: rgba(255, 247, 223, 0.78);
     line-height: 1.65;
+  }
+
+  .collection-toolbar {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.3fr) auto;
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 22px;
+    padding: 18px;
+    border: 1px solid rgba(106, 88, 216, 0.18);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(255, 214, 107, 0.16), transparent 34%),
+      #fff;
+    box-shadow: 0 18px 54px rgba(28, 20, 41, 0.08);
+  }
+
+  .collection-search {
+    display: grid;
+    gap: 8px;
+  }
+
+  .collection-search label {
+    color: #6a58d8;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .collection-search input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid #d8d1f0;
+    border-radius: 4px;
+    background: #fbfaf5;
+  }
+
+  .collection-filter {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+    gap: 8px;
+  }
+
+  .collection-filter div {
+    display: grid;
+    gap: 8px;
+  }
+
+  .collection-filter label {
+    color: #6a58d8;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .collection-filter select {
+    min-height: 44px;
+    width: 100%;
+    padding: 0 36px 0 12px;
+    border: 1px solid #d8d1f0;
+    border-radius: 4px;
+    background: #fff;
+    color: #140f1f;
+    font-weight: 700;
+  }
+
+  .collection-count {
+    color: #5f5870;
+    font-weight: 700;
+    white-space: nowrap;
   }
 
   .collection-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 18px;
     padding-bottom: 64px;
   }
 
   .collection-product {
     overflow: hidden;
-    border: 1px solid #ded8f5;
+    border: 1px solid rgba(106, 88, 216, 0.18);
     border-radius: 8px;
     background: #fff;
+    box-shadow: 0 18px 52px rgba(28, 20, 41, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .collection-product:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 22px 68px rgba(28, 20, 41, 0.14);
   }
 
   .collection-product__image img {
-    aspect-ratio: 1;
+    aspect-ratio: 10 / 13;
     width: 100%;
     object-fit: cover;
   }
 
   .collection-product__image--fallback {
     display: grid;
-    aspect-ratio: 1;
+    aspect-ratio: 10 / 13;
     place-items: end start;
     padding: 18px;
     background-position: center;
@@ -115,7 +398,16 @@
   }
 
   .collection-product__content {
+    display: grid;
+    gap: 8px;
     padding: 18px;
+  }
+
+  .collection-product__content > span {
+    color: #6a58d8;
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
   }
 
   .collection-product__content h2 {
@@ -127,13 +419,87 @@
   }
 
   .collection-product__content p {
-    margin-top: 8px;
     color: #6c647c;
   }
 
-  .collection-product__content strong {
-    display: block;
-    margin-top: 14px;
+  .collection-product__content div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .collection-product__content a {
+    color: #140f1f;
+    font-weight: 800;
+  }
+
+  .collection-empty {
+    padding: 24px;
+    border: 1px solid #ded8f5;
+    border-radius: 8px;
+    background: #fff;
+    color: #5f5870;
+  }
+
+  .collection-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 0 72px;
+  }
+
+  .collection-pagination__pages {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .collection-pagination a,
+  .collection-pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid #d8d1f0;
+    border-radius: 999px;
+    background: #fff;
+    color: #140f1f;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .collection-pagination a:hover,
+  .collection-pagination .is-current {
+    border-color: #140f1f;
+    background: #140f1f;
+    color: #fff7df;
+  }
+
+  .collection-pagination__button {
+    min-width: 104px;
+  }
+
+  .collection-pagination .is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 900px) {
+    .collection-toolbar,
+    .collection-filter {
+      grid-template-columns: 1fr;
+    }
+
+    .collection-count {
+      white-space: normal;
+    }
   }
 {% endstylesheet %}
 

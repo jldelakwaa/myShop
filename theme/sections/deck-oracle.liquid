@@ -5,63 +5,69 @@
   endif
 %}
 
-<section id="deck-oracle" class="deck-oracle">
-  <div class="deck-oracle__intro">
-    <p class="arcana-eyebrow">{{ section.settings.eyebrow }}</p>
-    <h2>{{ section.settings.heading }}</h2>
-    <p>{{ section.settings.copy }}</p>
-  </div>
-
-  <div class="deck-oracle__tool" data-deck-oracle>
-    <div class="deck-oracle__controls">
-      <div>
-        <span>Playstyle</span>
-        <button type="button" class="is-active" data-style="aggro">Aggro</button>
-        <button type="button" data-style="control">Control</button>
-        <button type="button" data-style="combo">Combo</button>
-      </div>
-      <div>
-        <span>Attribute</span>
-        <button type="button" class="is-active" data-attribute="dark">DARK</button>
-        <button type="button" data-attribute="light">LIGHT</button>
-        <button type="button" data-attribute="earth">EARTH</button>
-        <button type="button" data-attribute="water">WATER</button>
-        <button type="button" data-attribute="fire">FIRE</button>
-        <button type="button" data-attribute="wind">WIND</button>
-        <button type="button" data-attribute="divine">DIVINE</button>
-      </div>
-      <div>
-        <span>Summon type</span>
-        <button type="button" class="is-active" data-summon="normal">Normal</button>
-        <button type="button" data-summon="tribute">Tribute</button>
-        <button type="button" data-summon="fusion">Fusion</button>
-        <button type="button" data-summon="synchro">Synchro</button>
-        <button type="button" data-summon="xyz">Xyz</button>
-        <button type="button" data-summon="pendulum">Pendulum</button>
-        <button type="button" data-summon="link">Link</button>
-        <button type="button" data-summon="ritual">Ritual</button>
-      </div>
+<section
+  id="deck-oracle"
+  class="deck-oracle"
+  style="--oracle-bg-image: url({{ 'arcana-vault-hero.png' | asset_url }});"
+>
+  <div class="deck-oracle__inner">
+    <div class="deck-oracle__intro">
+      <p class="arcana-eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.copy }}</p>
     </div>
 
-    <div class="deck-oracle__result">
-      <div
-        class="deck-oracle__card"
-        data-oracle-card
-        {% if section.settings.card_image %}
-          style="--oracle-image: url({{ section.settings.card_image | image_url: width: 700 }});"
-        {% else %}
-          style="--oracle-image: url({{ 'arcana-vault-hero.png' | asset_url }});"
-        {% endif %}
-      >
-        <span data-oracle-rarity>Ultra Rare</span>
+    <div class="deck-oracle__tool" data-deck-oracle>
+      <div class="deck-oracle__controls">
+        <div>
+          <span>Playstyle</span>
+          <button type="button" class="is-active" data-style="aggro">Aggro</button>
+          <button type="button" data-style="control">Control</button>
+          <button type="button" data-style="combo">Combo</button>
+        </div>
+        <div>
+          <span>Attribute</span>
+          <button type="button" class="is-active" data-attribute="dark">DARK</button>
+          <button type="button" data-attribute="light">LIGHT</button>
+          <button type="button" data-attribute="earth">EARTH</button>
+          <button type="button" data-attribute="water">WATER</button>
+          <button type="button" data-attribute="fire">FIRE</button>
+          <button type="button" data-attribute="wind">WIND</button>
+          <button type="button" data-attribute="divine">DIVINE</button>
+        </div>
+        <div>
+          <span>Summon type</span>
+          <button type="button" class="is-active" data-summon="normal">Normal</button>
+          <button type="button" data-summon="tribute">Tribute</button>
+          <button type="button" data-summon="fusion">Fusion</button>
+          <button type="button" data-summon="synchro">Synchro</button>
+          <button type="button" data-summon="xyz">Xyz</button>
+          <button type="button" data-summon="pendulum">Pendulum</button>
+          <button type="button" data-summon="link">Link</button>
+          <button type="button" data-summon="ritual">Ritual</button>
+        </div>
       </div>
-      <div>
-        <p class="deck-oracle__label" data-oracle-label>Aggro / DARK / Normal</p>
-        <h3 data-oracle-title>Dark World Normal pressure deck</h3>
-        <p data-oracle-copy>
-          A pressure pick for duelists who want discard value, recursion, and consistent Normal Summon starters.
-        </p>
-        <a href="{{ section.settings.collection_link }}" data-oracle-link>Shop this build</a>
+
+      <div class="deck-oracle__result">
+        <div
+          class="deck-oracle__card"
+          data-oracle-card
+          {% if section.settings.card_image %}
+            style="--oracle-image: url({{ section.settings.card_image | image_url: width: 700 }});"
+          {% else %}
+            style="--oracle-image: url({{ 'arcana-vault-hero.png' | asset_url }});"
+          {% endif %}
+        >
+          <span data-oracle-rarity>Ultra Rare</span>
+        </div>
+        <div>
+          <p class="deck-oracle__label" data-oracle-label>Aggro / DARK / Normal</p>
+          <h3 data-oracle-title>Dark World Normal pressure deck</h3>
+          <p data-oracle-copy>
+            A pressure pick for duelists who want discard value, recursion, and consistent Normal Summon starters.
+          </p>
+          <a href="{{ section.settings.collection_link }}" data-oracle-link>Shop this build</a>
+        </div>
       </div>
     </div>
   </div>
@@ -79,7 +85,7 @@
             title: {{ product.title | json }},
             type: {{ product.type | json }},
             url: {{ product.url | json }},
-            image: {{ product.featured_image | image_url: width: 700, height: 900, crop: 'center' | json }}
+            image: {{ product.featured_image | image_url: width: 700 | json }}
           }{% unless forloop.last %},{% endunless %}
         {% endif %}
       {% endfor %}
@@ -103,6 +109,12 @@
       }
     };
 
+    const playstyleKeywords = {
+      aggro: ["blue-eyes", "dragon", "fire", "dinosaur", "warrior", "hero", "kaiba", "soulburner", "beast"],
+      control: ["dark world", "dark", "water", "sea", "light", "sanctuary", "spellcaster", "charmer", "underworld", "emperor"],
+      combo: ["machine", "cyber", "pendulum", "link", "synchro", "synchron", "shaddoll", "albaz", "dragunity", "cyberse"]
+    };
+
     const attributes = {
       dark: ["DARK", "Dark World", "#6f55ff", "graveyard value and discard pressure", ["dark world", "dark", "shaddoll", "zombie"]],
       light: ["LIGHT", "Blue-Eyes", "#4d8dff", "boss monsters and clean tempo swings", ["blue-eyes", "light", "sanctuary"]],
@@ -124,6 +136,17 @@
       ritual: ["Ritual", "a Ritual boss route"]
     };
 
+    const summonKeywords = {
+      normal: ["structure deck", "starter", "yugi", "kaiba", "blue-eyes"],
+      tribute: ["tribute", "emperor", "kaiba", "marik", "beast"],
+      fusion: ["fusion", "shaddoll", "albaz", "fallen", "hero", "cyber dragon"],
+      synchro: ["synchro", "synchron", "5d", "dragunity"],
+      xyz: ["xyz", "gear", "geargia"],
+      pendulum: ["pendulum", "domination", "master of pendulum"],
+      link: ["link", "cyberse", "powercode", "soulburner"],
+      ritual: ["ritual", "spellcaster", "charmers"]
+    };
+
     let selectedStyle = "aggro";
     let selectedAttribute = "dark";
     let selectedSummon = "normal";
@@ -135,21 +158,38 @@
     const rarity = root.querySelector("[data-oracle-rarity]");
     const productLink = root.querySelector("[data-oracle-link]");
 
-    function findProduct(attribute) {
-      const keywords = attribute[4];
-
-      return oracleProducts.find((product) => {
+    function scoreProduct(product, keywordGroups) {
+      return keywordGroups.reduce((score, keywords, index) => {
         const searchable = `${product.title} ${product.type}`.toLowerCase();
+        const weight = index === 0 ? 5 : 3;
 
-        return keywords.some((keyword) => searchable.includes(keyword));
-      }) ?? oracleProducts[0];
+        return score + keywords.reduce((total, keyword) => (
+          searchable.includes(keyword) ? total + weight : total
+        ), 0);
+      }, 0);
+    }
+
+    function findProduct(playstyleKey, attribute, summonKey) {
+      const scoredProducts = oracleProducts
+        .map((product) => ({
+          product,
+          score: scoreProduct(product, [
+            attribute[4],
+            summonKeywords[summonKey] || [],
+            playstyleKeywords[playstyleKey] || []
+          ])
+        }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      return scoredProducts[0]?.product ?? oracleProducts[0];
     }
 
     function render() {
       const playstyle = playstyles[selectedStyle];
       const attribute = attributes[selectedAttribute];
       const summon = summons[selectedSummon];
-      const product = findProduct(attribute);
+      const product = findProduct(selectedStyle, attribute, selectedSummon);
 
       title.textContent = `${attribute[1]} ${summon[0]} ${playstyle.title} deck`;
       copy.textContent = `A ${playstyle.label.toLowerCase()} lane with ${attribute[3]}, ${playstyle.copy}, and ${summon[1]}.`;
@@ -194,11 +234,42 @@
 
 {% stylesheet %}
   .deck-oracle {
+    position: relative;
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;
     padding: clamp(56px, 8vw, 104px) 0;
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, rgba(17, 10, 24, 0.94), rgba(17, 10, 24, 0.78) 52%, rgba(255, 214, 107, 0.22)),
+      linear-gradient(180deg, rgba(17, 10, 24, 0.62), rgba(17, 10, 24, 0.96)),
+      var(--oracle-bg-image);
+    background-position: center;
+    background-size: cover;
+    color: #fff7df;
+  }
+
+  .deck-oracle::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 247, 223, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 247, 223, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(90deg, #000, transparent 72%);
+    pointer-events: none;
+  }
+
+  .deck-oracle__inner {
+    position: relative;
+    z-index: 1;
+    width: min(var(--page-width), calc(100vw - var(--page-margin) * 2));
+    margin: 0 auto;
   }
 
   .deck-oracle .arcana-eyebrow {
-    color: #6a58d8;
+    color: #ffd66b;
     font-size: 0.84rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -211,14 +282,14 @@
 
   .deck-oracle__intro h2 {
     margin-top: 10px;
-    color: #140f1f;
+    color: #fff7df;
     font-size: clamp(2rem, 4vw, 4rem);
     line-height: 1;
   }
 
   .deck-oracle__intro p:last-child {
     margin-top: 18px;
-    color: #5f5870;
+    color: rgba(255, 247, 223, 0.78);
     line-height: 1.65;
   }
 
@@ -231,9 +302,11 @@
 
   .deck-oracle__controls,
   .deck-oracle__result {
-    border: 1px solid rgba(106, 88, 216, 0.28);
+    border: 1px solid rgba(255, 247, 223, 0.18);
     border-radius: 8px;
-    background: #fff;
+    background: rgba(255, 247, 223, 0.08);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
   }
 
   .deck-oracle__controls {
@@ -245,7 +318,7 @@
   .deck-oracle__controls span {
     display: block;
     margin-bottom: 10px;
-    color: #6b627c;
+    color: rgba(255, 247, 223, 0.76);
     font-size: 0.84rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -255,62 +328,68 @@
     display: inline-flex;
     margin: 0 8px 8px 0;
     padding: 9px 12px;
-    border: 1px solid #cfc8ef;
+    border: 1px solid rgba(255, 247, 223, 0.24);
     border-radius: 999px;
-    background: #fff;
-    color: #1c1429;
+    background: rgba(255, 247, 223, 0.08);
+    color: #fff7df;
     cursor: pointer;
   }
 
   .deck-oracle__controls button.is-active {
-    border-color: #1c1429;
-    background: #1c1429;
-    color: #fff7df;
+    border-color: #ffd66b;
+    background: #ffd66b;
+    color: #140f1f;
   }
 
   .deck-oracle__result {
     display: grid;
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 220px 1fr;
     gap: 24px;
     padding: 24px;
   }
 
   .deck-oracle__card {
     position: relative;
-    min-height: 252px;
+    min-height: 300px;
     overflow: hidden;
-    border: 3px solid #ffd66b;
-    border-radius: 10px;
+    border: 1px solid rgba(255, 214, 107, 0.34);
+    border-radius: 8px;
     background:
-      linear-gradient(180deg, rgba(17, 10, 24, 0.08), rgba(17, 10, 24, 0.72)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 34%, rgba(255, 255, 255, 0.12) 46%, transparent 54%),
+      linear-gradient(180deg, rgba(17, 10, 24, 0.04), rgba(17, 10, 24, 0.28)),
       var(--oracle-image),
       #110a18;
     background-position: center;
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     box-shadow: 0 20px 60px rgba(28, 20, 41, 0.22);
   }
 
   .deck-oracle__card::before {
     content: "";
     position: absolute;
-    inset: 18px;
-    border: 1px solid rgba(255, 214, 107, 0.54);
-    border-radius: 7px;
+    inset: auto 0 0;
+    height: 45%;
+    background: linear-gradient(180deg, transparent, rgba(17, 10, 24, 0.74));
+    pointer-events: none;
   }
 
   .deck-oracle__card span {
     position: absolute;
-    right: 14px;
-    bottom: 14px;
-    left: 14px;
-    color: #fff7df;
+    right: 12px;
+    bottom: 12px;
+    left: auto;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 214, 107, 0.46);
+    border-radius: 999px;
+    background: rgba(17, 10, 24, 0.74);
+    color: #ffd66b;
+    font-size: 0.78rem;
     font-weight: 800;
     text-align: center;
   }
 
   .deck-oracle__label {
-    color: #6a58d8;
+    color: #ffd66b;
     font-size: 0.82rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -318,21 +397,21 @@
 
   .deck-oracle__result h3 {
     margin-top: 12px;
-    color: #140f1f;
+    color: #fff7df;
     font-size: clamp(1.7rem, 3vw, 3rem);
     line-height: 1.05;
   }
 
   .deck-oracle__result p[data-oracle-copy] {
     margin-top: 14px;
-    color: #5f5870;
+    color: rgba(255, 247, 223, 0.78);
     line-height: 1.65;
   }
 
   .deck-oracle__result a {
     display: inline-flex;
     margin-top: 20px;
-    color: #140f1f;
+    color: #ffd66b;
     font-weight: 800;
   }
 
