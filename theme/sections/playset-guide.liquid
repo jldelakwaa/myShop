@@ -1,0 +1,606 @@
+<section class="playset-guide" id="playset-guide-{{ section.id }}">
+  <div class="playset-guide__intro">
+    <p class="arcana-eyebrow">{{ section.settings.eyebrow }}</p>
+    <h2>{{ section.settings.heading }}</h2>
+    <p>{{ section.settings.copy }}</p>
+  </div>
+
+  <div class="playset-guide__grid">
+    <article
+      class="playset-guide__feature"
+      style="--playset-guide-bg: url('{{ 'arcana-vault-hero.png' | asset_url }}');"
+    >
+      <span>Recommended buy</span>
+      <strong>x3</strong>
+      <h3>{{ section.settings.feature_heading }}</h3>
+      <p>{{ section.settings.feature_copy }}</p>
+      <a href="{{ section.settings.collection_link }}">{{ section.settings.link_label }}</a>
+    </article>
+
+    <article class="playset-guide__panel playset-guide__panel--why">
+      <span>Why three copies?</span>
+      <ul>
+        <li>More copies of the starters that make the deck open consistently.</li>
+        <li>Extra engine pieces so players can trim weak one-of cards.</li>
+        <li>Staple reprints become real playsets instead of single tech cards.</li>
+      </ul>
+      <div class="playset-guide__ratio">
+        <b>1 deck</b>
+        <span>learn the engine</span>
+        <b>3 decks</b>
+        <span>build a tuned list</span>
+      </div>
+    </article>
+
+    <article class="playset-guide__panel playset-guide__panel--carousel">
+      <div class="playset-guide__carousel-head">
+        <span>Staple value samples</span>
+        <div>
+          <button type="button" data-playset-prev aria-label="Previous staple sample">Prev</button>
+          <button type="button" data-playset-next aria-label="Next staple sample">Next</button>
+        </div>
+      </div>
+
+      <div class="playset-guide__slides" aria-live="polite">
+        <div class="playset-guide__slide playset-guide__slide--blue is-active" data-playset-slide>
+          <h3>Blue-Eyes White Destiny</h3>
+          <p>Big dragon core plus flexible interaction cards that can move into other decks.</p>
+          <div class="playset-guide__cards">
+            <a href="https://yugioh.fandom.com/wiki/Nibiru,_the_Primal_Being" target="_blank" rel="noopener">
+              <img src="{{ 'card-nibiru.jpg' | asset_url }}" alt="Nibiru, the Primal Being card" width="421" height="614" loading="lazy">
+              <strong>Nibiru</strong>
+              <small>combo board punish</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Ash_Blossom_%26_Joyous_Spring" target="_blank" rel="noopener">
+              <img src="{{ 'card-ash-blossom.jpg' | asset_url }}" alt="Ash Blossom & Joyous Spring card" width="421" height="614" loading="lazy">
+              <strong>Ash Blossom</strong>
+              <small>search stopper</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Infinite_Impermanence" target="_blank" rel="noopener">
+              <img src="{{ 'card-infinite-impermanence.jpg' | asset_url }}" alt="Infinite Impermanence card" width="421" height="614" loading="lazy">
+              <strong>Infinite Impermanence</strong>
+              <small>effect negate</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Effect_Veiler" target="_blank" rel="noopener">
+              <img src="{{ 'card-effect-veiler.jpg' | asset_url }}" alt="Effect Veiler card" width="421" height="614" loading="lazy">
+              <strong>Effect Veiler</strong>
+              <small>monster negate</small>
+            </a>
+          </div>
+          <a class="playset-guide__shop-link" href="/products/blue-eyes-white-destiny-structure-deck">Shop this deck</a>
+        </div>
+
+        <div class="playset-guide__slide playset-guide__slide--albaz" data-playset-slide>
+          <h3>Albaz Strike</h3>
+          <p>Fusion engine value with going-second tools and broadly playable interruption.</p>
+          <div class="playset-guide__cards">
+            <a href="https://yugioh.fandom.com/wiki/Ghost_Ogre_%26_Snow_Rabbit" target="_blank" rel="noopener">
+              <img src="{{ 'card-ghost-ogre.jpg' | asset_url }}" alt="Ghost Ogre & Snow Rabbit card" width="421" height="614" loading="lazy">
+              <strong>Ghost Ogre</strong>
+              <small>field card punish</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Effect_Veiler" target="_blank" rel="noopener">
+              <img src="{{ 'card-effect-veiler.jpg' | asset_url }}" alt="Effect Veiler card" width="421" height="614" loading="lazy">
+              <strong>Effect Veiler</strong>
+              <small>monster negate</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Called_by_the_Grave" target="_blank" rel="noopener">
+              <img src="{{ 'card-called-by-the-grave.jpg' | asset_url }}" alt="Called by the Grave card" width="421" height="614" loading="lazy">
+              <strong>Called by the Grave</strong>
+              <small>hand trap answer</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Dark_Ruler_No_More" target="_blank" rel="noopener">
+              <img src="{{ 'card-dark-ruler-no-more.jpg' | asset_url }}" alt="Dark Ruler No More card" width="421" height="614" loading="lazy">
+              <strong>Dark Ruler No More</strong>
+              <small>break boards</small>
+            </a>
+          </div>
+          <a class="playset-guide__shop-link" href="/products/albaz-strike-structure-deck">Shop this deck</a>
+        </div>
+
+        <div class="playset-guide__slide playset-guide__slide--traptrix" data-playset-slide>
+          <h3>Beware of Traptrix</h3>
+          <p>Traptrix gives a full control shell while also packing several evergreen staples.</p>
+          <div class="playset-guide__cards">
+            <a href="https://yugioh.fandom.com/wiki/Ash_Blossom_%26_Joyous_Spring" target="_blank" rel="noopener">
+              <img src="{{ 'card-ash-blossom.jpg' | asset_url }}" alt="Ash Blossom & Joyous Spring card" width="421" height="614" loading="lazy">
+              <strong>Ash Blossom</strong>
+              <small>search stopper</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Evenly_Matched" target="_blank" rel="noopener">
+              <img src="{{ 'card-evenly-matched.jpg' | asset_url }}" alt="Evenly Matched card" width="421" height="614" loading="lazy">
+              <strong>Evenly Matched</strong>
+              <small>board clear</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Harpie%27s_Feather_Duster" target="_blank" rel="noopener">
+              <img src="{{ 'card-harpies-feather-duster.jpg' | asset_url }}" alt="Harpie's Feather Duster card" width="421" height="614" loading="lazy">
+              <strong>Feather Duster</strong>
+              <small>backrow clear</small>
+            </a>
+            <a href="https://yugioh.fandom.com/wiki/Raigeki" target="_blank" rel="noopener">
+              <img src="{{ 'card-raigeki.jpg' | asset_url }}" alt="Raigeki card" width="421" height="614" loading="lazy">
+              <strong>Raigeki</strong>
+              <small>monster clear</small>
+            </a>
+          </div>
+          <a class="playset-guide__shop-link" href="{{ routes.all_products_collection_url }}?q=Beware%20of%20Traptrix">Find this deck</a>
+        </div>
+      </div>
+
+      <div class="playset-guide__dots" aria-hidden="true">
+        <i class="is-active"></i>
+        <i></i>
+        <i></i>
+      </div>
+    </article>
+  </div>
+</section>
+
+{% stylesheet %}
+  .playset-guide {
+    padding: clamp(56px, 8vw, 104px) 0;
+  }
+
+  .playset-guide__intro {
+    max-width: 860px;
+  }
+
+  .playset-guide .arcana-eyebrow {
+    color: #6a58d8;
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .playset-guide__intro h2 {
+    margin-top: 10px;
+    color: #140f1f;
+    font-size: clamp(2rem, 4.4vw, 4.4rem);
+    line-height: 1;
+  }
+
+  .playset-guide__intro p:last-child {
+    margin-top: 18px;
+    color: #5f5870;
+    line-height: 1.65;
+  }
+
+  .playset-guide__grid {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.85fr) minmax(230px, 0.72fr) minmax(360px, 1.28fr);
+    gap: 18px;
+    margin-top: 28px;
+  }
+
+  .playset-guide__feature,
+  .playset-guide__panel {
+    overflow: hidden;
+    border: 1px solid rgba(255, 214, 107, 0.18);
+    border-radius: 8px;
+    box-shadow: 0 18px 54px rgba(28, 20, 41, 0.18);
+  }
+
+  .playset-guide__feature {
+    display: grid;
+    align-content: end;
+    min-height: 420px;
+    padding: clamp(22px, 4vw, 34px);
+    background:
+      linear-gradient(90deg, rgba(20, 15, 31, 0.94), rgba(20, 15, 31, 0.6)),
+      linear-gradient(135deg, rgba(255, 214, 107, 0.22), transparent 42%),
+      var(--playset-guide-bg);
+    background-position: center;
+    background-size: cover;
+    color: #fff7df;
+  }
+
+  .playset-guide__feature span,
+  .playset-guide__panel span {
+    color: #ffd66b;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .playset-guide__feature strong {
+    margin-top: 14px;
+    color: #ffd66b;
+    font-size: clamp(4rem, 9vw, 7.6rem);
+    line-height: 0.86;
+  }
+
+  .playset-guide__feature h3 {
+    margin-top: 18px;
+    color: #fff7df;
+    font-size: clamp(1.5rem, 3vw, 2.6rem);
+    line-height: 1;
+  }
+
+  .playset-guide__feature p {
+    margin-top: 14px;
+    color: rgba(255, 247, 223, 0.78);
+    line-height: 1.6;
+  }
+
+  .playset-guide__feature a {
+    display: inline-flex;
+    justify-self: start;
+    align-items: center;
+    min-height: 42px;
+    margin-top: 22px;
+    padding: 0 14px;
+    border: 1px solid #ffd66b;
+    border-radius: 4px;
+    background: #ffd66b;
+    color: #140f1f;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .playset-guide__panel {
+    min-height: 420px;
+    padding: 24px;
+    background:
+      radial-gradient(circle at 15% 12%, rgba(106, 88, 216, 0.42), transparent 28%),
+      linear-gradient(145deg, #20162c 0%, #140f1f 52%, #3b2a18 100%);
+    color: #fff7df;
+  }
+
+  .playset-guide__panel--why {
+    display: grid;
+    align-content: start;
+    gap: 18px;
+  }
+
+  .playset-guide__panel ul {
+    display: grid;
+    gap: 13px;
+    padding-left: 20px;
+    color: rgba(255, 247, 223, 0.78);
+    line-height: 1.55;
+  }
+
+  .playset-guide__ratio {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 9px 12px;
+    margin-top: 6px;
+    padding: 16px;
+    border: 1px solid rgba(255, 214, 107, 0.22);
+    border-radius: 8px;
+    background: rgba(255, 247, 223, 0.08);
+  }
+
+  .playset-guide__ratio b {
+    color: #ffd66b;
+  }
+
+  .playset-guide__ratio span {
+    color: rgba(255, 247, 223, 0.74);
+    font-size: 0.88rem;
+    text-transform: none;
+  }
+
+  .playset-guide__panel--carousel {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+    background:
+      radial-gradient(circle at 78% 14%, rgba(255, 214, 107, 0.2), transparent 24%),
+      radial-gradient(circle at 12% 24%, rgba(106, 88, 216, 0.32), transparent 28%),
+      linear-gradient(145deg, #140f1f 0%, #21172c 54%, #44301e 100%);
+    isolation: isolate;
+  }
+
+  .playset-guide__panel--carousel::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    content: "";
+    background:
+      linear-gradient(115deg, transparent 0 28%, rgba(255, 214, 107, 0.18) 29% 29.5%, transparent 30% 100%),
+      radial-gradient(circle at 22% 62%, rgba(105, 226, 255, 0.18), transparent 22%),
+      radial-gradient(circle at 78% 74%, rgba(255, 214, 107, 0.18), transparent 26%),
+      repeating-linear-gradient(90deg, rgba(255, 247, 223, 0.045) 0 1px, transparent 1px 48px),
+      repeating-linear-gradient(0deg, rgba(255, 247, 223, 0.035) 0 1px, transparent 1px 48px);
+    opacity: 0.9;
+  }
+
+  .playset-guide__panel--carousel::after {
+    position: absolute;
+    top: 82px;
+    right: -24px;
+    z-index: -1;
+    width: 210px;
+    height: 300px;
+    border: 1px solid rgba(255, 214, 107, 0.28);
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at center, rgba(255, 214, 107, 0.24) 0 8%, transparent 9% 100%),
+      linear-gradient(135deg, transparent 0 46%, rgba(255, 214, 107, 0.24) 47% 48%, transparent 49% 100%),
+      linear-gradient(45deg, transparent 0 46%, rgba(255, 214, 107, 0.18) 47% 48%, transparent 49% 100%),
+      linear-gradient(145deg, rgba(255, 247, 223, 0.1), rgba(20, 15, 31, 0.26)),
+      #1a1226;
+    box-shadow:
+      -34px 18px 0 -1px rgba(255, 247, 223, 0.04),
+      -34px 18px 0 0 rgba(255, 214, 107, 0.14),
+      -68px 38px 0 -1px rgba(255, 247, 223, 0.035),
+      -68px 38px 0 0 rgba(255, 214, 107, 0.1);
+    opacity: 0.5;
+    transform: rotate(11deg);
+  }
+
+  .playset-guide__carousel-head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .playset-guide__carousel-head div {
+    display: flex;
+    gap: 8px;
+  }
+
+  .playset-guide__carousel-head button {
+    min-height: 34px;
+    padding: 0 10px;
+    border: 1px solid rgba(255, 214, 107, 0.34);
+    border-radius: 4px;
+    background: rgba(255, 247, 223, 0.08);
+    color: #fff7df;
+    cursor: pointer;
+    font-weight: 800;
+  }
+
+  .playset-guide__carousel-head button:hover {
+    background: #ffd66b;
+    color: #140f1f;
+  }
+
+  .playset-guide__slides {
+    position: relative;
+    z-index: 1;
+  }
+
+  .playset-guide__slide {
+    display: none;
+  }
+
+  .playset-guide__slide.is-active {
+    position: relative;
+    display: grid;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid rgba(255, 247, 223, 0.1);
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 100% 0%, var(--slide-accent, rgba(255, 214, 107, 0.18)), transparent 34%),
+      linear-gradient(135deg, rgba(255, 247, 223, 0.1), rgba(255, 247, 223, 0.03));
+    backdrop-filter: blur(2px);
+  }
+
+  .playset-guide__slide--blue {
+    --slide-accent: rgba(84, 147, 255, 0.34);
+  }
+
+  .playset-guide__slide--albaz {
+    --slide-accent: rgba(255, 214, 107, 0.3);
+  }
+
+  .playset-guide__slide--traptrix {
+    --slide-accent: rgba(125, 255, 169, 0.24);
+  }
+
+  .playset-guide__slide h3 {
+    color: #fff7df;
+    font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+    line-height: 1.05;
+  }
+
+  .playset-guide__slide p {
+    color: rgba(255, 247, 223, 0.75);
+    line-height: 1.55;
+  }
+
+  .playset-guide__cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(82px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .playset-guide__cards a {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid rgba(255, 214, 107, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 247, 223, 0.09);
+    color: #fff7df;
+    text-decoration: none;
+  }
+
+  .playset-guide__cards a:hover {
+    border-color: #ffd66b;
+    transform: translateY(-2px);
+  }
+
+  .playset-guide__cards img {
+    width: 100%;
+    aspect-ratio: 0.686;
+    border-radius: 5px;
+    object-fit: cover;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.26);
+  }
+
+  .playset-guide__cards strong {
+    overflow: hidden;
+    color: #fff7df;
+    font-size: 0.82rem;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+  }
+
+  .playset-guide__cards small {
+    color: #ffd66b;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .playset-guide__shop-link {
+    display: inline-flex;
+    justify-self: start;
+    align-items: center;
+    min-height: 40px;
+    margin-top: 4px;
+    padding: 0 13px;
+    border: 1px solid #ffd66b;
+    border-radius: 4px;
+    background: #ffd66b;
+    color: #140f1f;
+    font-weight: 900;
+    text-decoration: none;
+  }
+
+  .playset-guide__shop-link:hover {
+    background: #fff7df;
+  }
+
+  .playset-guide__dots {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 7px;
+  }
+
+  .playset-guide__dots i {
+    width: 26px;
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(255, 247, 223, 0.22);
+  }
+
+  .playset-guide__dots i.is-active {
+    background: #ffd66b;
+  }
+
+  @media (max-width: 1120px) {
+    .playset-guide__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .playset-guide__cards {
+      grid-template-columns: repeat(2, minmax(110px, 1fr));
+    }
+
+    .playset-guide__carousel-head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (() => {
+    const root = document.getElementById('playset-guide-{{ section.id }}');
+    if (!root) return;
+
+    const slides = Array.from(root.querySelectorAll('[data-playset-slide]'));
+    const dots = Array.from(root.querySelectorAll('.playset-guide__dots i'));
+    const prev = root.querySelector('[data-playset-prev]');
+    const next = root.querySelector('[data-playset-next]');
+    let index = 0;
+    let timer;
+
+    const show = (nextIndex) => {
+      index = (nextIndex + slides.length) % slides.length;
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle('is-active', slideIndex === index);
+      });
+      dots.forEach((dot, dotIndex) => {
+        dot.classList.toggle('is-active', dotIndex === index);
+      });
+    };
+
+    const start = () => {
+      window.clearInterval(timer);
+      timer = window.setInterval(() => show(index + 1), 4500);
+    };
+
+    prev?.addEventListener('click', () => {
+      show(index - 1);
+      start();
+    });
+    next?.addEventListener('click', () => {
+      show(index + 1);
+      start();
+    });
+    root.addEventListener('mouseenter', () => window.clearInterval(timer));
+    root.addEventListener('mouseleave', start);
+    start();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Playset guide",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Deck-building advice"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why duelists buy three Structure Decks"
+    },
+    {
+      "type": "textarea",
+      "id": "copy",
+      "label": "Copy",
+      "default": "A single Structure Deck is playable. Three copies gives a shopper more starters, better ratios, and staple reprints that can move into future deck builds."
+    },
+    {
+      "type": "text",
+      "id": "feature_heading",
+      "label": "Feature heading",
+      "default": "Build the core, then tune the list"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_copy",
+      "label": "Feature copy",
+      "default": "For many Structure Deck releases, buying three copies is the fastest path from sealed product to a consistent casual or locals-ready deck."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Shop Structure Decks"
+    },
+    {
+      "type": "url",
+      "id": "collection_link",
+      "label": "Collection link",
+      "default": "/collections/all"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Playset guide"
+    }
+  ]
+}
+{% endschema %}

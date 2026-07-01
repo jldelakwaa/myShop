@@ -11,11 +11,16 @@
     "oracle": {
       "type": "deck-oracle",
       "settings": {}
+    },
+    "playset_guide": {
+      "type": "playset-guide",
+      "settings": {}
     }
   },
   "order": [
     "hero",
     "archetypes",
-    "oracle"
+    "oracle",
+    "playset_guide"
   ]
 }

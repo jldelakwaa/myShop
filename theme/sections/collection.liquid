@@ -74,6 +74,9 @@
 
   <div class="collection-products" data-collection-grid>
     {% for product in collection.products %}
+      {% liquid
+        assign guide_query = product.title | append: ' structure deck guide how to play' | url_encode
+      %}
       <div
         class="collection-product"
         data-product-card
@@ -101,9 +104,19 @@
           <span>{{ product.type | default: 'Structure Deck' }}</span>
           <h2>{{ product.title | escape | link_to: product.url }}</h2>
           <p>{{ product.vendor | default: 'Arcana Vault' }}</p>
+          <p class="collection-product__buy-note">x3 recommended for deck building</p>
           <div>
             <strong>{{ product.price | money }}</strong>
-            <a href="{{ product.url }}">View build</a>
+            <span>
+              <a href="{{ product.url }}">View build</a>
+              <a
+                href="https://www.youtube.com/results?search_query={{ guide_query }}"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Guide
+              </a>
+            </span>
           </div>
         </div>
       </div>
@@ -422,12 +435,31 @@
     color: #6c647c;
   }
 
+  .collection-product__buy-note {
+    display: inline-flex;
+    justify-self: start;
+    padding: 5px 9px;
+    border: 1px solid rgba(255, 214, 107, 0.56);
+    border-radius: 999px;
+    background: #fff8dc;
+    color: #4d3510 !important;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
   .collection-product__content div {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-top: 8px;
+  }
+
+  .collection-product__content div span {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
   }
 
   .collection-product__content a {

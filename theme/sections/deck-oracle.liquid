@@ -66,7 +66,12 @@
           <p data-oracle-copy>
             A pressure pick for duelists who want discard value, recursion, and consistent Normal Summon starters.
           </p>
-          <a href="{{ section.settings.collection_link }}" data-oracle-link>Shop this build</a>
+          <a class="deck-oracle__shop-link" href="{{ section.settings.collection_link }}" data-oracle-link>Shop this build</a>
+        </div>
+
+        <div class="deck-oracle__next">
+          <span data-oracle-count>1 of 1</span>
+          <button type="button" data-oracle-next>Next match</button>
         </div>
       </div>
     </div>
@@ -137,7 +142,7 @@
     };
 
     const summonKeywords = {
-      normal: ["structure deck", "starter", "yugi", "kaiba", "blue-eyes"],
+      normal: ["yugi", "kaiba", "blue-eyes", "warrior", "spellcaster"],
       tribute: ["tribute", "emperor", "kaiba", "marik", "beast"],
       fusion: ["fusion", "shaddoll", "albaz", "fallen", "hero", "cyber dragon"],
       synchro: ["synchro", "synchron", "5d", "dragunity"],
@@ -150,6 +155,8 @@
     let selectedStyle = "aggro";
     let selectedAttribute = "dark";
     let selectedSummon = "normal";
+    let selectedMatchIndex = 0;
+    let currentMatches = [];
 
     const title = root.querySelector("[data-oracle-title]");
     const copy = root.querySelector("[data-oracle-copy]");
@@ -157,39 +164,47 @@
     const card = root.querySelector("[data-oracle-card]");
     const rarity = root.querySelector("[data-oracle-rarity]");
     const productLink = root.querySelector("[data-oracle-link]");
+    const nextMatch = root.querySelector("[data-oracle-next]");
+    const matchCount = root.querySelector("[data-oracle-count]");
 
-    function scoreProduct(product, keywordGroups) {
-      return keywordGroups.reduce((score, keywords, index) => {
-        const searchable = `${product.title} ${product.type}`.toLowerCase();
-        const weight = index === 0 ? 5 : 3;
-
-        return score + keywords.reduce((total, keyword) => (
-          searchable.includes(keyword) ? total + weight : total
-        ), 0);
-      }, 0);
+    function scoreKeywords(searchable, keywords, weight) {
+      return keywords.reduce((score, keyword) => (
+        searchable.includes(keyword) ? score + weight : score
+      ), 0);
     }
 
-    function findProduct(playstyleKey, attribute, summonKey) {
-      const scoredProducts = oracleProducts
-        .map((product) => ({
-          product,
-          score: scoreProduct(product, [
-            attribute[4],
-            summonKeywords[summonKey] || [],
-            playstyleKeywords[playstyleKey] || []
-          ])
-        }))
-        .filter((item) => item.score > 0)
-        .sort((a, b) => b.score - a.score);
+    function scoreProduct(product, playstyleKey, attribute, summonKey) {
+      const searchable = `${product.title} ${product.type}`.toLowerCase();
+      const attributeScore = scoreKeywords(searchable, attribute[4], 5);
+      const summonScore = scoreKeywords(searchable, summonKeywords[summonKey] || [], 4);
+      const playstyleScore = scoreKeywords(searchable, playstyleKeywords[playstyleKey] || [], 2);
 
-      return scoredProducts[0]?.product ?? oracleProducts[0];
+      return {
+        score: attributeScore + summonScore + playstyleScore,
+        hasFilterMatch: attributeScore > 0 || summonScore > 0
+      };
     }
 
-    function render() {
+    function findProducts(playstyleKey, attribute, summonKey) {
+      return oracleProducts
+        .map((product) => {
+          const result = scoreProduct(product, playstyleKey, attribute, summonKey);
+
+          return {
+            product,
+            score: result.score,
+            hasFilterMatch: result.hasFilterMatch
+          };
+        })
+        .filter((item) => item.hasFilterMatch)
+        .sort((a, b) => b.score - a.score || a.product.title.localeCompare(b.product.title));
+    }
+
+    function renderProduct() {
       const playstyle = playstyles[selectedStyle];
       const attribute = attributes[selectedAttribute];
       const summon = summons[selectedSummon];
-      const product = findProduct(selectedStyle, attribute, selectedSummon);
+      const product = currentMatches[selectedMatchIndex]?.product ?? oracleProducts[0];
 
       title.textContent = `${attribute[1]} ${summon[0]} ${playstyle.title} deck`;
       copy.textContent = `A ${playstyle.label.toLowerCase()} lane with ${attribute[3]}, ${playstyle.copy}, and ${summon[1]}.`;
@@ -204,6 +219,25 @@
       if (productLink && product?.url) {
         productLink.href = product.url;
       }
+
+      if (nextMatch) {
+        nextMatch.disabled = currentMatches.length <= 1;
+      }
+
+      if (matchCount) {
+        matchCount.textContent = `${selectedMatchIndex + 1} of ${Math.max(currentMatches.length, 1)}`;
+      }
+    }
+
+    function resetMatches() {
+      currentMatches = findProducts(selectedStyle, attributes[selectedAttribute], selectedSummon);
+
+      if (currentMatches.length === 0 && oracleProducts[0]) {
+        currentMatches = [{ product: oracleProducts[0], score: 0 }];
+      }
+
+      selectedMatchIndex = 0;
+      renderProduct();
     }
 
     root.addEventListener("click", (event) => {
@@ -213,22 +247,31 @@
       if (button.dataset.style) {
         selectedStyle = button.dataset.style;
         root.querySelectorAll("[data-style]").forEach((item) => item.classList.toggle("is-active", item === button));
+        resetMatches();
+        return;
       }
 
       if (button.dataset.attribute) {
         selectedAttribute = button.dataset.attribute;
         root.querySelectorAll("[data-attribute]").forEach((item) => item.classList.toggle("is-active", item === button));
+        resetMatches();
+        return;
       }
 
       if (button.dataset.summon) {
         selectedSummon = button.dataset.summon;
         root.querySelectorAll("[data-summon]").forEach((item) => item.classList.toggle("is-active", item === button));
+        resetMatches();
       }
-
-      render();
     });
 
-    render();
+    nextMatch?.addEventListener("click", () => {
+      if (currentMatches.length <= 1) return;
+      selectedMatchIndex = (selectedMatchIndex + 1) % currentMatches.length;
+      renderProduct();
+    });
+
+    resetMatches();
   })();
 </script>
 
@@ -342,10 +385,12 @@
   }
 
   .deck-oracle__result {
+    position: relative;
     display: grid;
     grid-template-columns: 220px 1fr;
     gap: 24px;
     padding: 24px;
+    padding-bottom: 74px;
   }
 
   .deck-oracle__card {
@@ -408,10 +453,45 @@
     line-height: 1.65;
   }
 
-  .deck-oracle__result a {
+  .deck-oracle__shop-link {
     display: inline-flex;
+    align-items: center;
+    min-height: 40px;
     margin-top: 20px;
     color: #ffd66b;
+    font-weight: 800;
+  }
+
+  .deck-oracle__next {
+    position: absolute;
+    right: 24px;
+    bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .deck-oracle__next button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid #ffd66b;
+    border-radius: 4px;
+    background: transparent;
+    color: #ffd66b;
+    cursor: pointer;
+    font-weight: 800;
+  }
+
+  .deck-oracle__next button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .deck-oracle__next span {
+    color: rgba(255, 247, 223, 0.68);
+    font-size: 0.82rem;
     font-weight: 800;
   }
 
@@ -419,6 +499,13 @@
     .deck-oracle__tool,
     .deck-oracle__result {
       grid-template-columns: 1fr;
+    }
+
+    .deck-oracle__next {
+      position: static;
+      justify-content: flex-end;
+      grid-column: 1;
+      margin-top: 4px;
     }
   }
 {% endstylesheet %}

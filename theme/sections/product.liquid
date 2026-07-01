@@ -5,6 +5,10 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
+{% liquid
+  assign deck_guide_query = product.title | append: ' structure deck guide how to play' | url_encode
+%}
+
 <section
   class="arcana-product full-width"
   style="--product-bg-image: url({% if product.featured_image %}{{ product.featured_image | image_url: width: 1800 }}{% else %}{{ 'arcana-vault-hero.png' | asset_url }}{% endif %});"
@@ -45,6 +49,28 @@
       </div>
       <div class="product-description">{{ product.description }}</div>
 
+      <div class="product-guide">
+        <span>Learn the line</span>
+        <p>Open current YouTube guides for this deck before you buy or sleeve it.</p>
+        <a
+          href="https://www.youtube.com/results?search_query={{ deck_guide_query }}"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Watch deck guide
+        </a>
+      </div>
+
+      <div class="product-buy-plan">
+        <span>Recommended buy plan</span>
+        <h2>Most duelists start with 3 copies</h2>
+        <p>
+          One copy is fine for casual testing. Three copies gives you a stronger pool of core engine cards,
+          staple reprints, and playset ratios for tuning a real deck list.
+        </p>
+        <button type="button" data-quantity-preset="3">Set quantity to 3</button>
+      </div>
+
       <div class="product-promises">
         <span><strong>Build type</strong> Archetype-ready deck lane</span>
         <span><strong>Vault care</strong> Collector-safe packaging</span>
@@ -74,6 +100,10 @@
           <div class="product-form__row">
             <label for="ProductQuantity-{{ section.id }}">Quantity</label>
             <input id="ProductQuantity-{{ section.id }}" type="number" name="quantity" min="1" value="1">
+            <div class="product-quantity-presets" aria-label="Quantity presets">
+              <button type="button" data-quantity-preset="1">1 casual copy</button>
+              <button type="button" data-quantity-preset="3">3 deck-building copies</button>
+            </div>
           </div>
 
           <input type="submit" value="Add to vault">
@@ -83,6 +113,25 @@
     </div>
   </div>
 </section>
+
+<script>
+  (() => {
+    const productSection = document.querySelector(".arcana-product");
+    if (!productSection) return;
+
+    const quantityInput = productSection.querySelector("input[name='quantity']");
+    const presetButtons = productSection.querySelectorAll("[data-quantity-preset]");
+
+    presetButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!quantityInput) return;
+
+        quantityInput.value = button.dataset.quantityPreset || "1";
+        quantityInput.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    });
+  })();
+</script>
 
 {% stylesheet %}
   .arcana-product {
@@ -248,6 +297,73 @@
     line-height: 1.65;
   }
 
+  .product-guide {
+    display: grid;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid rgba(255, 214, 107, 0.42);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(255, 214, 107, 0.2), transparent 38%),
+      #140f1f;
+    color: #fff7df;
+  }
+
+  .product-guide span {
+    color: #ffd66b;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .product-guide p {
+    color: rgba(255, 247, 223, 0.76);
+    line-height: 1.5;
+  }
+
+  .product-guide a {
+    color: #ffd66b;
+    font-weight: 800;
+  }
+
+  .product-buy-plan {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid #d8d1f0;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .product-buy-plan span {
+    color: #6a58d8;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .product-buy-plan h2 {
+    color: #140f1f;
+    font-size: 1.18rem;
+    line-height: 1.2;
+  }
+
+  .product-buy-plan p {
+    color: #5f5870;
+    line-height: 1.55;
+  }
+
+  .product-buy-plan button {
+    justify-self: start;
+    min-height: 40px;
+    padding: 0 14px;
+    border-color: #ffd66b;
+    background: #ffd66b;
+    color: #140f1f;
+  }
+
   .product-promises {
     display: grid;
     gap: 8px;
@@ -278,6 +394,23 @@
   .product-form__row {
     display: grid;
     gap: 6px;
+  }
+
+  .product-quantity-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .product-quantity-presets button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #d8d1f0;
+    border-radius: 999px;
+    background: #fff;
+    color: #140f1f;
+    font-size: 0.84rem;
+    font-weight: 800;
   }
 
   .product-form label {
