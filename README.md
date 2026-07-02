@@ -12,11 +12,11 @@ Take-home Shopify project using Shopify Liquid, Vite, Node.js, Drizzle ORM, and 
 
 Theme code:
 
-- Home page with custom hero, Structure Deck carousel, and interactive deck finder.
+- Home page with custom hero, Structure Deck carousel, interactive deck finder, and playset/staple value guide.
 - Collection page with search, dropdown filters, custom pagination, and branded product grid.
 - Product page with themed product background, gallery, and purchase panel.
 - Cart page with branded order summary and empty-cart state.
-- Custom sections in `theme/sections`: `arcana-hero.liquid`, `archetype-showcase.liquid`, `deck-oracle.liquid`.
+- Custom sections in `theme/sections`: `arcana-hero.liquid`, `archetype-showcase.liquid`, `deck-oracle.liquid`, `playset-guide.liquid`.
 
 Embedded app code:
 
@@ -188,5 +188,5 @@ pnpm run web:build
 - Embedded app backend: `app/server/`
 - Drizzle schema: `app/server/src/db/`
 - Migrations: `app/server/drizzle/`
-- Setup instructions: `README.md`, `SHOPIFY_SETUP.md`
+- Setup instructions: `README.md`, with shorter checklists in `SETUP_GUIDE.md` and `SHOPIFY_SETUP.md`
 - Decisions document: `APP_DECISIONS.md`

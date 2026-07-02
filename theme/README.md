@@ -1,6 +1,6 @@
 # Arcana Vault Theme
 
-Arcana Vault is an original fantasy trading-card storefront inspired by the excitement of anime duel culture without using official card-game names, logos, characters, or artwork.
+Arcana Vault is an original trading-card storefront focused on Structure Deck discovery, deck-building guidance, and collector-style merchandising.
 
 ## Store Concept
 
@@ -8,9 +8,9 @@ The shop presents trading-card starter decks, booster packs, sleeves, collector 
 
 ## Core Pages
 
-- Home: custom hero, archetype showcase, and interactive deck oracle.
-- Collection: product grid for cards and collector gear.
-- Product: edition selector, product promises, and collector-focused layout.
+- Home: custom hero, Structure Deck carousel, interactive deck oracle, and playset/staple guide.
+- Collection: branded product grid with search, dropdown filters, and pagination.
+- Product: themed product media, buy plan, guide link, and purchase panel.
 - Cart: decklist-style review before checkout.
 
 ## Custom Sections
@@ -18,13 +18,14 @@ The shop presents trading-card starter decks, booster packs, sleeves, collector 
 - `arcana-hero.liquid`: cinematic first viewport with generated hero image.
 - `archetype-showcase.liquid`: product-driven Structure Deck carousel.
 - `deck-oracle.liquid`: interactive playstyle, Attribute, and summon-type picker with an optional card image.
+- `playset-guide.liquid`: explains why shoppers may buy three Structure Decks and highlights staple value samples.
 
 ## Local Development
 
 Run theme commands from the repository root with the theme path:
 
 ```sh
-shopify theme dev --path theme --store 2v0ubf-z1.myshopify.com
+shopify theme dev --path theme --store your-dev-store.myshopify.com
 ```
 
 Or use the project script if configured:

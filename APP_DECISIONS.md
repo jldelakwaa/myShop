@@ -38,7 +38,7 @@ The theme uses Liquid, CSS, and minimal JavaScript.
 
 Core pages:
 
-- Home: hero, Structure Deck carousel, interactive deck finder.
+- Home: hero, Structure Deck carousel, interactive deck finder, and playset/staple value guide.
 - Collection: search, dropdown filters, custom pagination, branded grid.
 - Product: themed background, gallery, purchase panel.
 - Cart: themed cart review and order summary.
@@ -48,6 +48,7 @@ Custom sections:
 - `arcana-hero.liquid`: first impression and primary navigation into products or deck finder.
 - `archetype-showcase.liquid`: product carousel for Structure Deck browsing.
 - `deck-oracle.liquid`: interactive playstyle, Attribute, and summon-type finder.
+- `playset-guide.liquid`: explains why duelists often buy three Structure Decks and highlights staple/hand-trap value.
 
 The standout feature is the **Interactive Deck Finder**. It lets shoppers choose playstyle, Attribute, and summon type, then changes the recommended deck lane, product image, copy, and product link.
 
